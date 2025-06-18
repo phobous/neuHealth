@@ -1,0 +1,19 @@
+<mapper>
+    <select id="countBedsSummary" resultType="map">
+    SELECT
+        COUNT(*) AS total,
+        SUM(CASE WHEN status = '空闲' THEN 1 ELSE 0 END) AS idle,
+        SUM(CASE WHEN status = '有人' THEN 1 ELSE 0 END) AS occupied,
+        SUM(CASE WHEN status = '外出' THEN 1 ELSE 0 END) AS out
+    FROM beds
+    WHERE is_deleted = 0
+</select>
+
+<select id="getAvailableBeds" resultType="com.neuhealth.demo.domain.Bed">
+    SELECT * FROM beds
+    WHERE room_id = #{roomId}
+      AND status = '空闲'
+      AND is_deleted = 0
+</select>
+
+</mapper>

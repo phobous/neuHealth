@@ -1,0 +1,18 @@
+<mapper namespace="com.neuhealth.demo.mapper.CheckOutRequestMapper">
+
+    <select id="searchByClientName" resultType="com.neuhealth.demo.domain.CheckOutRequest">
+        SELECT r.*
+        FROM check_out_requests r
+        JOIN clients c ON r.client_id = c.id
+        WHERE c.name LIKE CONCAT('%', #{name}, '%') AND r.status IS NOT NULL
+    </select>
+
+    <update id="updateBedStatus">
+        UPDATE beds
+        SET status = #{status}
+        WHERE id = (
+            SELECT bed_id FROM clients WHERE id = #{clientId}
+        )
+    </update>
+
+</mapper>

@@ -1,0 +1,18 @@
+<mapper namespace="com.neuhealth.demo.mapper.OutRequestMapper">
+
+    <select id="searchByClientName" resultType="com.neuhealth.demo.domain.OutRequest">
+        SELECT o.*
+        FROM out_requests o
+        JOIN clients c ON o.client_id = c.id
+        WHERE c.name LIKE CONCAT('%', #{name}, '%') AND o.status IS NOT NULL
+    </select>
+
+    <update id="updateBedStatus">
+        UPDATE beds
+        SET status = #{status}
+        WHERE id = (
+            SELECT bed_id FROM clients WHERE id = #{clientId}
+        )
+    </update>
+
+</mapper>
