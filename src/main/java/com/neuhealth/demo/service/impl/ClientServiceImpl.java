@@ -8,6 +8,10 @@ import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +20,17 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Autowired
     private ClientMapper clientMapper;
+
+    @Override
+    public List<Client> findAll() {
+        return clientMapper.selectList(null);
+    }
+    @Override
+    public List<Client> findAllActive() {
+        QueryWrapper<Client> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_deleted", 0);
+        return clientMapper.selectList(queryWrapper);
+    }
 
     @Override
     public List<Client> searchClients(String name, String type) {
@@ -27,12 +42,17 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         if (client.getContractEndDate().before(client.getCheckInDate())) {
             throw new IllegalArgumentException("合同到期时间不能早于入住时间");
         }
+        String birthStr = extractBirthDateStr(client.getIdCard());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate localDate = LocalDate.parse(birthStr, formatter);
+        Date birthDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         client.setCreatedAt(new Date());
         client.setDeleted(false);
-        client.setType(determineClientType(client.getMealId())); // 示例处理
+        client.setBirthDate(birthDate);
+        client.setAge(calculateAgeFromIdCard(client.getIdCard()));
         boolean saved = this.save(client);
         if (saved) {
-            clientMapper.updateBedStatus(client.getBedId(), "occupied");
+            clientMapper.updateBedStatus(client.getBedId(), "有人");
         }
         return saved;
     }
@@ -45,11 +65,17 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         client.setDeleted(true);
         boolean updated = this.updateById(client);
         if (updated) {
-            clientMapper.updateBedStatus(client.getBedId(), "free");
-            clientMapper.hideCurrentBedUsage(clientId);
+            clientMapper.updateBedStatus(client.getBedId(), "空闲");
+            //clientMapper.hideCurrentBedUsage(clientId);
         }
         return updated;
     }
+
+    @Override
+    public boolean deleteClientsByIds(List<Long> ids) {
+        return this.removeByIds(ids);
+    }
+
 
     @Override
     public boolean updateClient(Client client) {
@@ -64,7 +90,21 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         return updated;
     }
 
-    private String determineClientType(int mealId) {
-        return mealId == 0 ? "自理" : "护理";
+
+    public static String extractBirthDateStr(String idCard) {
+        if (idCard == null || idCard.length() < 10) {
+            throw new IllegalArgumentException("身份证号格式不正确");
+        }
+        return idCard.substring(6, 14);
     }
+
+
+    public static int calculateAgeFromIdCard(String idCard) {
+        String birthStr = extractBirthDateStr(idCard);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate birthDate = LocalDate.parse(birthStr, formatter);
+        LocalDate now = LocalDate.now();
+        return Period.between(birthDate, now).getYears();
+    }
+
 }

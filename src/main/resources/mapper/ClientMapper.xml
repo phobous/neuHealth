@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuhealth.demo.mapper.ClientMapper">
+    
+    <resultMap type="Client" id="ClientsResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="gender"    column="gender"    />
+        <result property="age"    column="age"    />
+        <result property="nation"    column="nation"    />
+        <result property="birthDate"    column="birth_date"    />
+        <result property="idCard"    column="id_card"    />
+        <result property="bloodType"    column="blood_type"    />
+        <result property="mealId"    column="meal_id"    />
+        <result property="checkInDate"    column="check_in_date"    />
+        <result property="contractEndDate"    column="contract_end_date"    />
+        <result property="type"    column="type"    />
+        <result property="isDeleted"    column="is_deleted"    />
+        <result property="createdAt"    column="created_at"    />
+        <result property="bedId"    column="bed_id"    />
+        <result property="isAllocated"    column="is_allocated"    />
+    </resultMap>
+
+    <sql id="selectClientsVo">
+        select id, name, gender, age, nation, birth_date, id_card, blood_type, meal_id, check_in_date, contract_end_date, type, is_deleted, created_at, bed_id,is_allocated from clients
+    </sql>
+
+    <select id="searchClients" resultMap="ClientsResult" parameterType="map">
+        <include refid="selectClientsVo"/>
+        WHERE 1=1
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="type != null and type != ''">
+            AND type = #{type}
+        </if>
+    </select>
+
+    <insert id="registerClient" parameterType="Client" useGeneratedKeys="true" keyProperty="id">
+        insert into clients
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="gender != null and gender != ''">gender,</if>
+            <if test="age != null">age,</if>
+            <if test="nation != null">nation,</if>
+            <if test="birthDate != null">birth_date,</if>
+            <if test="idCard != null">id_card,</if>
+            <if test="bloodType != null">blood_type,</if>
+            <if test="mealId != null">meal_id,</if>
+            <if test="checkInDate != null">check_in_date,</if>
+            <if test="contractEndDate != null">contract_end_date,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="bedId != null">bed_id,</if>
+            <if test="isAllocated != null">is_allocated,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="gender != null and gender != ''">#{gender},</if>
+            <if test="age != null">#{age},</if>
+            <if test="nation != null">#{nation},</if>
+            <if test="birthDate != null">#{birthDate},</if>
+            <if test="idCard != null">#{idCard},</if>
+            <if test="bloodType != null">#{bloodType},</if>
+            <if test="mealId != null">#{mealId},</if>
+            <if test="checkInDate != null">#{checkInDate},</if>
+            <if test="contractEndDate != null">#{contractEndDate},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="bedId != null">#{bedId},</if>
+            <if test="isAllocated != null">#{isAllocated},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClient" parameterType="Client">
+        update clients
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="gender != null and gender != ''">gender = #{gender},</if>
+            <if test="age != null">meal_id = #{age},</if>
+            <if test="nation != null">nation = #{nation},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="bloodType != null">blood_type = #{bloodType},</if>
+            <if test="mealId != null">meal_id = #{mealId},</if>
+            <if test="checkInDate != null">check_in_date = #{checkInDate},</if>
+            <if test="contractEndDate != null">contract_end_date = #{contractEndDate},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="bedId != null">bed_id = #{bedId},</if>
+            <if test="isAllocated != null">is_allocated = #{isAllocated},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClient" parameterType="int">
+        delete from clients where id = #{id}
+    </delete>
+
+    <delete id="deleteClientsByIds" parameterType="java.util.List">
+        delete from clients where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <update id="updateBedStatus" parameterType="map">
+        UPDATE beds SET status = #{status} WHERE id = #{bedId}
+    </update>
+
+    <update id="updateCurrentBedLeaveDate">
+        UPDATE clients
+        SET contract_end_date = #{leaveDate}
+        WHERE id = #{clientId}
+    </update>
+</mapper>
