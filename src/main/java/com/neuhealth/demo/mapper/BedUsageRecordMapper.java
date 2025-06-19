@@ -16,7 +16,10 @@ public interface BedUsageRecordMapper extends BaseMapper<BedUsageRecord> {
         @Param("startDate") Date startDate
     );
 
+    //插入新纪录
+    public int insertBedUsageRecords(BedUsageRecord bedUsageRecord);
+    public List<BedUsageRecord> selectBedUsageRecordsList(BedUsageRecord bedUsageRecord);
     void endOldBedUsage(@Param("clientId") int clientId, @Param("endDate") Date endDate);
-
+    List<BedUsageRecord> getAllBedUsageRecords();
     void markAllInactive(@Param("clientId") int clientId);
 }

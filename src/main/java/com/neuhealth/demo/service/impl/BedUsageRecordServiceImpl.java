@@ -23,6 +23,13 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
     private BedUsageRecordMapper usageRecordMapper;
 
     @Override
+    public List<BedUsageRecord> getAllBedUsageRecords(){return usageRecordMapper.getAllBedUsageRecords();}
+    @Override
+    public List<BedUsageRecord> selectBedUsageRecordsList(BedUsageRecord bedUsageRecord)
+    {
+        return usageRecordMapper.selectBedUsageRecordsList(bedUsageRecord);
+    }
+    @Override
     public List<BedUsageRecord> queryUsageRecords(String name, String status, Date startDate) {
         return usageRecordMapper.queryUsageRecords(name, status, startDate);
     }
@@ -34,7 +41,7 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
         record.setCheckOutDate(checkOutDate);
         return this.updateById(record);
     }
-
+    //床位调整
     @Override
     public boolean swapBed(int clientId, int oldBedId, int newBedId) {
         Date now = new Date();
@@ -52,6 +59,10 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
         newRecord.setStatus("正在使用");
         newRecord.setCreatedAt(now);
         this.save(newRecord);
+        usageRecordMapper.insertBedUsageRecords(newRecord);
+        //需要添加修改clients表里对应的bed_id
+
+
         // 3. 更新新床位状态
         bedMapper.updateById(new Bed() {{
             setId(newBedId);

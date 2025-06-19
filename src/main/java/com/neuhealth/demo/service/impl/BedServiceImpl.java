@@ -13,6 +13,8 @@ import java.util.Map;
 public class BedServiceImpl extends ServiceImpl<BedMapper, Bed> implements IBedService {
 
     @Override
+    public List<Bed> getAllBeds(){return baseMapper.getAllBeds();}
+    @Override
     public List<Map<String, Object>> getBedStatistics() {
         return baseMapper.countBedsSummary();
     }
