@@ -35,6 +35,25 @@
             <artifactId>spring-boot-starter-web</artifactId>
 
         </dependency>
+        <!-- mybatis-plus-generator依赖（这里默认基于FreeMarker模板引擎） -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+
+            <artifactId>mybatis-plus-generator</artifactId>
+
+            <version>3.5.1</version>
+
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.freemarker</groupId>
+
+            <artifactId>freemarker</artifactId>
+
+            <version>2.3.31</version>
+
+        </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -51,6 +70,7 @@
             <artifactId>mysql-connector-j</artifactId>
             <version>8.3.0</version>
         </dependency>
+
       <!--这个不可以省略 -->
         <dependency>
             <groupId>org.mybatis</groupId>
