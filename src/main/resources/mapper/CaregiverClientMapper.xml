@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuhealth.demo.mapper.CaregiverClientMapper">
+
+    <!-- 根据姓名查询该管家的客户 -->
+    <select id="getClientsByCaregiverIdAndName" resultType="com.neuhealth.demo.domain.Client">
+        SELECT cl.* FROM clients cl
+                             INNER JOIN caregiver_client cc ON cl.id = cc.client_id
+        WHERE cc.caregiver_id = #{caregiverId}
+          AND cl.name LIKE CONCAT('%', #{name}, '%')
+          AND cl.is_deleted = 0
+    </select>
+
+    <select id="getUnassignedClientsByName" resultType="com.neuhealth.demo.domain.Client">
+        SELECT * FROM clients
+        WHERE id NOT IN (
+            SELECT client_id FROM caregiver_client
+        )
+          AND name LIKE CONCAT('%', #{name}, '%')
+          AND is_deleted = 0
+    </select>
+
+
+
+
+</mapper>

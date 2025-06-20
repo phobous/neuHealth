@@ -2,6 +2,7 @@ package com.neuhealth.demo.service.impl;
 
 import com.neuhealth.demo.domain.Caregiver;
 import com.neuhealth.demo.domain.CaregiverClient;
+import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.mapper.CaregiverClientMapper;
 import com.neuhealth.demo.mapper.CaregiverMapper;
 import com.neuhealth.demo.service.ICaregiverService;
@@ -24,11 +25,6 @@ public class CaregiverServiceImpl implements ICaregiverService {
 
 
     @Override
-    public List<Caregiver> searchCaregiversByName(String name) {
-        return caregiverMapper.selectByNameLike(name);
-    }
-
-    @Override
     public Caregiver getCaregiverByClientId(int clientId) {
         return caregiverClientMapper.selectCaregiverByClientId(clientId);
     }
@@ -40,9 +36,30 @@ public class CaregiverServiceImpl implements ICaregiverService {
 
     @Override
     public List<Object> getClientsByCaregiver(int caregiverId) {
-        return caregiverClientMapper.selectClientsByCaregiverId(caregiverId);
+        return null;
     }
 
+    //搜索管家
+    @Override
+    public List<Caregiver> searchCaregiversByName(String name) {
+        return caregiverMapper.selectByNameLike(name);
+    }
+    //得到对应客户列表
+    @Override
+    public List<Client> getClientsByCaregiverIdAndName(int caregiverId, String name) {
+        return caregiverClientMapper.getClientsByCaregiverIdAndName(caregiverId, name);
+    }
+
+    @Override
+    public List<Client> getUnassignedClientsByName(String name) {
+        return caregiverClientMapper.getUnassignedClientsByName(name);
+    }
+
+    /*@Override
+    public List<Object> getClientsByCaregiver(int caregiverId) {
+        return caregiverClientMapper.selectClientsByCaregiverId(caregiverId);
+    }*/
+    //分配客户
     @Override
     public void assignClientToCaregiver(int caregiverId, int clientId) {
         CaregiverClient mapping = new CaregiverClient();
@@ -54,7 +71,7 @@ public class CaregiverServiceImpl implements ICaregiverService {
         }
     }
 
-
+    //删除客户
     @Override
     public void removeClientFromCaregiver(int caregiverId, int clientId) {
         caregiverClientMapper.deleteByCaregiverAndClient(caregiverId, clientId);
