@@ -15,10 +15,13 @@ public class CaregiverServiceImpl implements ICaregiverService {
     private final CaregiverMapper caregiverMapper;
     private final CaregiverClientMapper caregiverClientMapper;
 
+
+
     public CaregiverServiceImpl(CaregiverMapper caregiverMapper, CaregiverClientMapper caregiverClientMapper) {
         this.caregiverMapper = caregiverMapper;
         this.caregiverClientMapper = caregiverClientMapper;
     }
+
 
     @Override
     public List<Caregiver> searchCaregiversByName(String name) {
@@ -45,8 +48,12 @@ public class CaregiverServiceImpl implements ICaregiverService {
         CaregiverClient mapping = new CaregiverClient();
         mapping.setCaregiverId(caregiverId);
         mapping.setClientId(clientId);
-        caregiverClientMapper.insert(mapping);
+        int rows = caregiverClientMapper.insert(mapping);
+        if (rows <= 0) {
+            throw new RuntimeException("插入失败");
+        }
     }
+
 
     @Override
     public void removeClientFromCaregiver(int caregiverId, int clientId) {

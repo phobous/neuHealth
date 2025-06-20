@@ -38,6 +38,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public List<Client> searchClientsNoCg( boolean isAllocated) {
+        return clientMapper.searchClientsNoCg(isAllocated);
+    }
+
+    @Override
     public boolean registerClient(Client client) {
         if (client.getContractEndDate().before(client.getCheckInDate())) {
             throw new IllegalArgumentException("合同到期时间不能早于入住时间");
