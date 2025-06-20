@@ -2,6 +2,7 @@ package com.neuhealth.demo.controller;
 
 import com.neuhealth.demo.domain.Caregiver;
 
+import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.service.ICaregiverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ public class CaregiverController {
     @Autowired
     private ICaregiverService caregiverService;
 
-    //得到所有健康管家列表
+    /*得到所有健康管家列表
     @GetMapping("/all")
     @ResponseBody
     public Map<String, Object> getAllCaregivers() {
@@ -31,7 +32,22 @@ public class CaregiverController {
         response.put("msg", "查询所有护理人员成功");
         return response;
     }
+    */
 
+    // 查询所有健康管家，支持模糊搜索
+    @GetMapping("/search")
+    @ResponseBody
+    public Map<String, Object> searchCaregivers(@RequestParam(required = false, defaultValue = "") String name) {
+        List<Caregiver> caregivers = caregiverService.searchCaregiversByName(name);
+        Map<String, Object> response = new HashMap<>();
+        response.put("isOk", true);
+        response.put("count", caregivers.size());
+        response.put("data", caregivers);
+        response.put("msg", "模糊查询护理人员成功");
+        return response;
+    }
+
+/*
     //通过caregiverId得到对应客户列表
     @GetMapping("/{caregiverId}/clients")
     @ResponseBody
@@ -51,6 +67,20 @@ public class CaregiverController {
             response.put("msg", "根据护理人员ID查询客户成功");
         }
         return response;
+    }*/
+    //通过caregiverId得到对应客户列表（支持模糊搜索）
+    @GetMapping("/clients/byCaregiver")
+    @ResponseBody
+    public Map<String, Object> getClientsByCaregiver(
+            @RequestParam int caregiverId,
+            @RequestParam(required = false, defaultValue = "") String name) {
+        List<Client> clients = caregiverService.getClientsByCaregiverIdAndName(caregiverId, name);
+        return Map.of(
+                "isOk", true,
+                "count", clients.size(),
+                "data", clients,
+                "msg", "查询成功"
+        );
     }
 
     // 分配客户给护理人员
@@ -67,6 +97,19 @@ public class CaregiverController {
             response.put("msg", "客户分配失败: " + e.getMessage());
         }
         return response;
+    }
+
+    @GetMapping("/clients/unassigned")
+    @ResponseBody
+    public Map<String, Object> getUnassignedClients(
+            @RequestParam(required = false, defaultValue = "") String name) {
+        List<Client> clients = caregiverService.getUnassignedClientsByName(name);
+        return Map.of(
+                "isOk", true,
+                "count", clients.size(),
+                "data", clients,
+                "msg", "查询成功"
+        );
     }
 
     // 从护理人员移除客户（注意前端测试时不要用get，是delete
