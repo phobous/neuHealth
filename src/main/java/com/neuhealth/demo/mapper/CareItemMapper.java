@@ -13,7 +13,13 @@ import java.util.List;
 public interface CareItemMapper extends BaseMapper<CareItem> {
     List<CareItem> queryByConditions(@Param("status") String status, @Param("name") String name);
     void logicDelete(@Param("id") int id);
+
+    //得到所有已启用的护理项目列表
     List<CareItem> getEnabledItems();
+
+
     @Select("SELECT * FROM care_items WHERE id NOT IN (SELECT item_id FROM client_care_config WHERE client_id = #{clientId}) AND status = '启用' AND is_deleted = false AND name LIKE CONCAT('%', #{name}, '%')")
     List<CareItem> selectItemsNotOwnedByClient(@Param("clientId") int clientId, @Param("name") String name);
+
+    List<CareItem> selectEnabledItemsExcludingClient(int clientId);
 }

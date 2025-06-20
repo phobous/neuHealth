@@ -1,5 +1,6 @@
 package com.neuhealth.demo.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -15,4 +16,7 @@ public class ClientCareConfig {
     private Date startDate;
     private int quantity;
     private Date endDate;
+    //护理项目状态
+    @TableField(exist = false)
+    private String status;  // 动态字段：normal / expired / arrear
 }

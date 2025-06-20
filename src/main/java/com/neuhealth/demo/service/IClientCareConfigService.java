@@ -9,13 +9,26 @@ import java.util.Date;
 import java.util.List;
 
 public interface IClientCareConfigService {
+    //得到客户的项目列表
     List<ClientCareConfig> getByClientId(int clientId);
-    void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds);
-    void removeCareLevel(int clientId, int careLevelId);
+
+    //得到客户未购买的项目列表
+    //List<CareItem> getEnabledItemsExcludingClient(int clientId);
+
+
+    //找到客户未购买的项目列表(带名字查询)
+    List<CareItem> getEnabledItemsExcludingClientByName(int clientId, String name);
+
+    //续费
     void renewService(int configId, int addQuantity, Date newEndDate);
 
-    void removeService(int configId);
+    //删除护理项目
+    int removeService(int configId);
 
+    void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds);
+    void removeCareLevel(int clientId, int careLevelId);
+
+    //添加护理项目
     void addService(int clientId, int itemId, int quantity, Date endDate);
 
     // 根据状态和名称模糊查询护理项目（利用 CareItemMapper.queryByConditions）
