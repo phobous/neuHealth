@@ -5,8 +5,28 @@
 
 <mapper namespace="com.neuhealth.demo.mapper.CheckOutRequestMapper">
 
-    <select id="searchByClientName" resultType="com.neuhealth.demo.domain.CheckOutRequest">
-        SELECT r.*
+    <resultMap id="checkOutRequestWithClientMap" type="com.neuhealth.demo.domain.CheckOutRequestVO">
+        <id property="id" column="id" />
+        <result property="clientId" column="client_id" />
+        <result property="type" column="type" />
+        <result property="reason" column="reason" />
+        <result property="requestedAt" column="requested_at" />
+        <result property="status" column="status" />
+        <result property="reviewerId" column="reviewer_id" />
+        <result property="reviewTime" column="review_time" />
+        <result property="clientName" column="clientName" />
+        <result property="detail" column="detail" />
+    </resultMap>
+
+    <select id="selectAll" resultMap="checkOutRequestWithClientMap">
+        SELECT r.*, c.name AS clientName
+        FROM check_out_requests r
+                 LEFT JOIN clients c ON r.client_id = c.id
+    </select>
+
+
+    <select id="searchByClientName" resultMap="checkOutRequestWithClientMap">
+        SELECT r.*, c.name AS clientName
         FROM check_out_requests r
         JOIN clients c ON r.client_id = c.id
         WHERE c.name LIKE CONCAT('%', #{name}, '%') AND r.status IS NOT NULL

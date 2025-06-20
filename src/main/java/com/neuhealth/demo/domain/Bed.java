@@ -11,4 +11,12 @@ public class Bed {
     private String bedNumber;
     private String status;
     private boolean isDeleted;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

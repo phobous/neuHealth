@@ -2,6 +2,8 @@ package com.neuhealth.demo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.CheckOutRequest;
+import com.neuhealth.demo.domain.CheckOutRequestVO;
+import com.neuhealth.demo.domain.OutRequest;
 import com.neuhealth.demo.mapper.CheckOutRequestMapper;
 import com.neuhealth.demo.service.ICheckOutRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,15 @@ public class CheckOutRequestServiceImpl extends ServiceImpl<CheckOutRequestMappe
     private CheckOutRequestMapper mapper;
 
     @Override
-    public List<CheckOutRequest> searchByClientName(String name) {
+    public List<CheckOutRequestVO> findAll() {
+        return mapper.selectAll();
+    }
+
+    @Override
+    public List<CheckOutRequestVO> searchByClientName(String name) {
         return mapper.searchByClientName(name);
     }
-   @Override
+    @Override
     public void submitRequest(CheckOutRequest request) {
         mapper.insert(request);
     }
@@ -37,7 +44,7 @@ public class CheckOutRequestServiceImpl extends ServiceImpl<CheckOutRequestMappe
 
         if (updated && "通过".equals(status) &&
             ("正常退住".equals(request.getType()) || "死亡退住".equals(request.getType()))) {
-            mapper.updateBedStatus(request.getClientId(), "可用");
+            mapper.updateBedStatus(request.getClientId(), "空闲");
         }
         return updated;
     }

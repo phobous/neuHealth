@@ -2,7 +2,11 @@ package com.neuhealth.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.neuhealth.demo.domain.Bed;
 import com.neuhealth.demo.domain.Client;
+import com.neuhealth.demo.domain.ClientBedMapping;
+import com.neuhealth.demo.mapper.BedMapper;
+import com.neuhealth.demo.mapper.ClientBedMappingMapper;
 import com.neuhealth.demo.mapper.ClientMapper;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,10 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Autowired
     private ClientMapper clientMapper;
+    @Autowired
+    private BedMapper bedMapper;
+    @Autowired
+    private ClientBedMappingMapper clientBed;
 
     @Override
     public List<Client> findAll() {
@@ -47,17 +55,26 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         if (client.getContractEndDate().before(client.getCheckInDate())) {
             throw new IllegalArgumentException("合同到期时间不能早于入住时间");
         }
-        String birthStr = extractBirthDateStr(client.getIdCard());
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate localDate = LocalDate.parse(birthStr, formatter);
-        Date birthDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        if(if_available(client.getBedId())){
+            throw new IllegalStateException("该床位已有入住人员，无法注册");
+        }
         client.setCreatedAt(new Date());
         client.setDeleted(false);
-        client.setBirthDate(birthDate);
+        client.setBirthDate(parseBirthDate(client.getIdCard()));
         client.setAge(calculateAgeFromIdCard(client.getIdCard()));
         boolean saved = this.save(client);
         if (saved) {
             clientMapper.updateBedStatus(client.getBedId(), "有人");
+            ClientBedMapping mapping = new ClientBedMapping();
+            mapping.setClientId(client.getId());
+            mapping.setBedId(client.getBedId());
+            mapping.setAssignedAt(client.getCreatedAt());
+            mapping.setIsDeleted(false);
+            mapping.setCreatedAt(new Date());
+            mapping.setUpdatedAt(new Date());
+
+
+            clientBed.insert(mapping);
         }
         return saved;
     }
@@ -72,6 +89,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         if (updated) {
             clientMapper.updateBedStatus(client.getBedId(), "空闲");
             //clientMapper.hideCurrentBedUsage(clientId);
+            clientBed.markDeletedByClientId(clientId);
         }
         return updated;
     }
@@ -103,13 +121,32 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         return idCard.substring(6, 14);
     }
 
+    public static Date parseBirthDate(String idCard) {
+        String birthStr = extractBirthDateStr(idCard);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        LocalDate localDate = LocalDate.parse(birthStr, formatter);
+        localDate = localDate.plusDays(1);
+
+        // 2. 转换为 java.util.Date
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+    }
+
 
     public static int calculateAgeFromIdCard(String idCard) {
         String birthStr = extractBirthDateStr(idCard);
+        System.out.print(birthStr);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        System.out.print(formatter);
         LocalDate birthDate = LocalDate.parse(birthStr, formatter);
         LocalDate now = LocalDate.now();
+        System.out.print(birthDate);
         return Period.between(birthDate, now).getYears();
+    }
+
+    public boolean if_available(int id){
+        Bed bed = bedMapper.selectById(id);
+        if("空闲".equals(bed.getStatus())){ return false;}
+        else return true;
     }
 
 }

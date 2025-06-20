@@ -2,6 +2,7 @@ package com.neuhealth.demo.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.OutRequest;
+import com.neuhealth.demo.domain.OutRequestVO;
 import com.neuhealth.demo.mapper.OutRequestMapper;
 import com.neuhealth.demo.service.IOutRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,11 @@ public class OutRequestServiceImpl extends ServiceImpl<OutRequestMapper, OutRequ
     private OutRequestMapper mapper;
 
     @Override
-    public List<OutRequest> searchByClientName(String name) {
+    public List<OutRequestVO> findAll() {
+        return mapper.selectAll();
+    }
+    @Override
+    public List<OutRequestVO> searchByClientName(String name) {
         return mapper.searchByClientName(name);
     }
     @Override
