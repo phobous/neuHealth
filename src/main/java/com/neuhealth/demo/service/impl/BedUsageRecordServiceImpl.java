@@ -88,16 +88,16 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
         newRecord.setCheckOutDate(TimeAdditionUtil.add8Hours(checkOut));
         newRecord.setUpdatedAt(TimeAdditionUtil.add8Hours(now));
         //this.save(newRecord);
-        result=usageRecordMapper.insertBedUsageRecords(newRecord);
+        int result1=usageRecordMapper.insertBedUsageRecords(newRecord);
         //需要添加修改clients表里对应的bed_id
         Client client=clientMapper.selectById(clientId);
         client.setBedId(newBedId);
-        result=clientMapper.updateById(client);
+        int result2=clientMapper.updateById(client);
         // 3. 更新新床位状态
         Bed newBed=bedMapper.selectById(newBedId);
         newBed.setStatus("有人");
-        result=bedMapper.updateById(newBed);
-        return result!=0;
+        int result3=bedMapper.updateById(newBed);
+        return result1!=0&&result3!=0&&result2!=0&&result!=0;
     }
 
 
