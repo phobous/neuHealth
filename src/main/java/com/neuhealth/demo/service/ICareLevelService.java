@@ -8,4 +8,7 @@ public interface ICareLevelService {
     List<CareLevel> listByStatus(String status);
     void updateStatus(int id, String status);
     void addLevel(CareLevel level);
+    List<CareLevel> listAll();
+    public boolean deleteById(int id);
+
 }

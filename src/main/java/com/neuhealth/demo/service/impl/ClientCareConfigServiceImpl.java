@@ -1,8 +1,6 @@
 package com.neuhealth.demo.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.neuhealth.demo.domain.CareItem;
-import com.neuhealth.demo.domain.ClientCareConfig;
+import com.neuhealth.demo.domain.*;
 import com.neuhealth.demo.mapper.CareItemMapper;
 import com.neuhealth.demo.mapper.ClientCareConfigMapper;
 import com.neuhealth.demo.mapper.CareLevelItemMapper;
@@ -20,13 +18,25 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     private ClientCareConfigMapper clientCareConfigMapper;
     private CareLevelItemMapper careLevelItemMapper;
     private CareItemMapper careItemMapper;
+    @Override
+    public List<ClientInfoDTO> getClientsByName(String name) {
+        // 假设你有一个 ClientInfoMapper 或相似的数据库访问类
+        return clientCareConfigMapper.findClientsByNameLike(name);  // 使用类似 MyBatis 的方法模糊查询
+    }
 
+    @Override
+    public List<ClientInfoDTO> getAllClientInfo() {
+        return clientCareConfigMapper.getAllClientInfo();
+    }
     @Autowired
     public ClientCareConfigServiceImpl(ClientCareConfigMapper clientCareConfigMapper, CareLevelItemMapper careLevelItemMapper) {
         this.clientCareConfigMapper = clientCareConfigMapper;
         this.careLevelItemMapper = careLevelItemMapper;
     }
-
+    @Override
+    public List<CareItem> queryItemsByCareLevel(int careLevelId) {
+        return careLevelItemMapper.selectItemsByLevelId(careLevelId);
+    }
     @Override
     public List<ClientCareConfig> getByClientId(int clientId) {
         return clientCareConfigMapper.findByClientId(clientId);

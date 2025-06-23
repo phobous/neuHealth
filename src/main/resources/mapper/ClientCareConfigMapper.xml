@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuhealth.demo.mapper.ClientCareConfigMapper">
+
+    <select id="getAllClientInfo" resultType="com.neuhealth.demo.domain.ClientInfoDTO">
+    SELECT
+        c.id AS clientId,
+        c.name,
+        TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) AS age,
+        c.gender,
+        r.room_number AS roomNumber,
+        b.bed_number AS bedNumber,
+        r.building,
+        cc.phone,
+        cl.name AS careLevel,
+        cl.id AS careLevelId
+    FROM
+        clients c
+    LEFT JOIN beds b ON c.bed_id = b.id
+    LEFT JOIN rooms r ON b.room_id = r.id
+    LEFT JOIN client_contacts cc ON c.id = cc.client_id
+    LEFT JOIN client_care_config cf ON c.id = cf.client_id
+    LEFT JOIN care_levels cl ON cf.care_level_id = cl.id
+    WHERE c.is_deleted = FALSE
+</select>
+
+<select id="findClientsByNameLike" resultType="com.neuhealth.demo.domain.ClientInfoDTO">
+    SELECT
+        c.id AS clientId,
+        c.name,
+        TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) AS age,
+        c.gender,
+        r.room_number AS roomNumber,
+        b.bed_number AS bedNumber,
+        r.building,
+        cc.phone,
+        cl.name AS careLevel,
+        cl.id AS careLevelId
+    FROM
+        clients c
+    LEFT JOIN beds b ON c.bed_id = b.id
+    LEFT JOIN rooms r ON b.room_id = r.id
+    LEFT JOIN client_contacts cc ON c.id = cc.client_id
+    LEFT JOIN client_care_config cf ON c.id = cf.client_id
+    LEFT JOIN care_levels cl ON cf.care_level_id = cl.id
+    WHERE c.name LIKE CONCAT('%', #{name}, '%')
+</select>
+
+
+</mapper>

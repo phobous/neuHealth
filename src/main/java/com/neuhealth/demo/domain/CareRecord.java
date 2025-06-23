@@ -8,11 +8,11 @@ import java.util.Date;
 @Data
 @TableName("care_records")
 public class CareRecord {
-    private int id;
-    private int clientId;
-    private int itemId;
-    private int caregiverId;
+    private Integer id;
+    private Integer clientId;
+    private Integer itemId;
+    private Integer caregiverId;
     private Date careTime;
-    private int careQuantity;
+    private Integer careQuantity;
     private boolean isDeleted;
 }

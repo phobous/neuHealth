@@ -2,6 +2,7 @@ package com.neuhealth.demo.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.neuhealth.demo.domain.CareRecord;
+import com.neuhealth.demo.domain.CareRecordDTO;
 import com.neuhealth.demo.mapper.CareRecordMapper;
 import com.neuhealth.demo.mapper.ClientCareConfigMapper;
 import com.neuhealth.demo.service.ICareRecordService;
@@ -22,7 +23,7 @@ public class CareRecordServiceImpl implements ICareRecordService {
     }
 
     @Override
-    public List<CareRecord> getByClientId(int clientId) {
+    public List<CareRecordDTO> getByClientId(int clientId) {
         return careRecordMapper.findByClientId(clientId);
     }
 
