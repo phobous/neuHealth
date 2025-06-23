@@ -1,6 +1,8 @@
 package com.neuhealth.demo.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.Bed;
 import com.neuhealth.demo.domain.Client;
@@ -39,6 +41,25 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         queryWrapper.eq("is_deleted", 0);
         return clientMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public Page<Client> findClientsByPage(int pageNum, int pageSize, String name, String type) {
+        System.out.println("分页第几页？: " + pageNum );
+        Page<Client> page = new Page<>(pageNum, pageSize);
+        LambdaQueryWrapper<Client> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Client::getisDeleted, 0);
+
+        if (name != null && !name.trim().isEmpty()) {
+            wrapper.like(Client::getName, name);
+        }
+
+        if (type != null && !type.trim().isEmpty()) {
+            wrapper.eq(Client::getType, type);
+        }
+
+        return clientMapper.selectPage(page, wrapper);
+    }
+
 
     @Override
     public List<Client> searchClients(String name, String type) {

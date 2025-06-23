@@ -1,7 +1,11 @@
 package com.neuhealth.demo.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.neuhealth.demo.domain.CheckOutRequestVO;
+import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.domain.OutRequestVO;
+import com.neuhealth.demo.domain.ReviewRequest;
 import com.neuhealth.demo.service.IOutRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,15 +37,33 @@ public class OutController {
         res.put("out",out);
         return res;
     }
+    @GetMapping("/page")
+    public Map<String, Object> page(
+            @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String name
+    ) {
+        List<OutRequestVO> list = out.findOutByPage(pageNum, pageSize, name);
+        int total = out.countOut(name);
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("records", list);
+        res.put("total", total);
+        res.put("pageNum", pageNum);
+        res.put("pageSize", pageSize);
+
+        return res;
+    }
 
     //审核
     @PostMapping("/review")
-    public Map reviewRequest(
-            @RequestParam Integer requestId,
-            @RequestParam String status,
-            @RequestParam Integer reviewerId) {
+    public Map reviewRequest(@RequestBody ReviewRequest request) {
+        Integer requestId = request.getRequestId();
+        String status = request.getStatus();
+        Integer reviewerId = request.getReviewerId();
+        String detail = request.getDetail();
 
-        boolean success = out.reviewRequest(requestId, status, reviewerId);
+        boolean success = out.reviewRequest(requestId, status, reviewerId,detail);
         Map res = new HashMap();
         res.put("isOk",true);
         try {
