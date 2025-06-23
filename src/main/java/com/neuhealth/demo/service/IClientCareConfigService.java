@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IClientCareConfigService {
     //得到客户的项目列表
-    List<ClientCareConfig> getByClientId(int clientId);
+    List<ClientCareConfig> getByClientId(int clientId, String name);
 
     //得到客户未购买的项目列表
     //List<CareItem> getEnabledItemsExcludingClient(int clientId);

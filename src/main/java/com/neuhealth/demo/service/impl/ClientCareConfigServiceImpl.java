@@ -29,11 +29,17 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
 
     //找到客户购买的项目列表
     @Override
-    public List<ClientCareConfig> getByClientId(int clientId) {
-        List<ClientCareConfig> configs = clientCareConfigMapper.findByClientId(clientId);
+    public List<ClientCareConfig> getByClientId(int clientId, String name) {
+        // 如果 name 为空，则将其设置为空字符串
+        if (name == null) {
+            name = "";
+        }
 
+        // 调用 Mapper 层的方法，查询符合条件的护理配置项
+        List<ClientCareConfig> configs = clientCareConfigMapper.findByClientIdAndName(clientId, name);
+
+        // 处理每个护理配置项的状态
         Date now = new Date();
-
         for (ClientCareConfig config : configs) {
             if (config.getEndDate() != null && config.getEndDate().before(now)) {
                 config.setStatus("expired");
@@ -44,8 +50,12 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
             }
         }
 
+        // 返回包含 item_name, quantity, endDate, 和 status 的列表
         return configs;
     }
+
+
+
 
     //找到客户未购买的项目列表
     @Override

@@ -15,7 +15,9 @@ import java.util.List;
 @Mapper
 public interface ClientCareConfigMapper extends BaseMapper<ClientCareConfig> {
     //得到当前客户的护理列表
+    List<ClientCareConfig> findByClientIdAndName(@Param("clientId") int clientId, @Param("name") String name);
     List<ClientCareConfig> findByClientId(@Param("clientId") int clientId);
+
 
     // 得到当前客户未购买护理项目列表（带名字模糊查询）
     List<CareItem> selectEnabledItemsExcludingClientByName(@Param("clientId") int clientId, @Param("name") String name);

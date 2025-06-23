@@ -22,17 +22,27 @@ public class ClientCareConfigController {
 
     //找到客户对应护理项目（以及状态的计算）
     @GetMapping("/byClientId")
-    public Map<String, Object> getCareConfigByClientId(@RequestParam int clientId) {
-        Map<String, Object> response = new HashMap<>();
+    public Map<String, Object> getCareConfigByClientId(
+            @RequestParam int clientId,
+            @RequestParam(required = false) String name) {
 
+        // 如果 name 为 null，则将其设置为空字符串
+        if (name == null) {
+            name = "";
+        }
+
+        Map<String, Object> response = new HashMap<>();
         try {
-            List<ClientCareConfig> configs = clientCareConfigService.getByClientId(clientId);
+            // 调用 Service 层方法，获取护理配置列表
+            List<ClientCareConfig> configs = clientCareConfigService.getByClientId(clientId, name);
+
             if (configs == null || configs.isEmpty()) {
                 response.put("isOk", false);
                 response.put("msg", "未找到对应的护理配置");
                 response.put("data", null);
                 response.put("count", 0);
             } else {
+                // 构建返回的响应
                 response.put("isOk", true);
                 response.put("msg", "查询成功");
                 response.put("data", configs);
@@ -45,6 +55,9 @@ public class ClientCareConfigController {
 
         return response;
     }
+
+
+
 
     //客户未购买的项目列表（带名字查询）
     @GetMapping("/availableForClient/{clientId}")

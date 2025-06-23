@@ -101,8 +101,7 @@ public class CaregiverController {
 
     @GetMapping("/clients/unassigned")
     @ResponseBody
-    public Map<String, Object> getUnassignedClients(
-            @RequestParam(required = false, defaultValue = "") String name) {
+    public Map<String, Object> getUnassignedClients(@RequestParam(required = false, defaultValue = "") String name) {
         List<Client> clients = caregiverService.getUnassignedClientsByName(name);
         return Map.of(
                 "isOk", true,

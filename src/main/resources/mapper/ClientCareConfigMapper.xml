@@ -30,23 +30,19 @@
 
 
     <!-- 根据客户查找项目列表 -->
-    <select id="findByClientId" resultMap="ClientCareConfigResultMap" parameterType="int">
-        SELECT *
-        FROM client_care_config
-        WHERE client_id = #{clientId}
+    <select id="findByClientIdAndName" resultMap="ClientCareConfigResultMap" parameterType="map">
+        SELECT ccc.*, ci.name AS item_name, ci.price AS item_price, ci.description AS item_description
+        FROM client_care_config ccc
+        JOIN care_items ci ON ccc.item_id = ci.id
+        WHERE ccc.client_id = #{clientId}
+        <if test="name != null and name != ''">
+            AND ci.name LIKE CONCAT('%', #{name}, '%')
+        </if>
     </select>
 
-    <!-- 续费 -->
-    <update id="renewService" parameterType="map">
-        UPDATE client_care_config
-        SET quantity = quantity + #{addQuantity}, end_date = #{newEndDate}
-        WHERE id = #{configId}
-    </update>
 
-    <!-- 删除护理项目 -->
-    <delete id="removeService" parameterType="int">
-        DELETE FROM client_care_config WHERE id = #{configId}
-    </delete>
+
+
 
     <!-- 得到当前客户未购买的项目（带名字的模糊查询） -->
     <select id="selectEnabledItemsExcludingClientByName" resultMap="CareItemResultMap" parameterType="map">

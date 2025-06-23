@@ -19,4 +19,18 @@ public class ClientCareConfig {
     //护理项目状态
     @TableField(exist = false)
     private String status;  // 动态字段：normal / expired / arrear
+
+    // 添加 itemName 字段
+    private String itemName;
+
+    // 其他属性的 getter 和 setter 方法
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
 }
