@@ -5,8 +5,28 @@
 
 <mapper namespace="com.neuhealth.demo.mapper.OutRequestMapper">
 
-    <select id="searchByClientName" resultType="com.neuhealth.demo.domain.OutRequest">
-        SELECT o.*
+    <resultMap id="outRequestWithClientMap" type="com.neuhealth.demo.domain.OutRequestVO">
+        <id property="id" column="id" />
+        <result property="clientId" column="client_id" />
+        <result property="reason" column="reason" />
+        <result property="outTime" column="out_time" />
+        <result property="expectedReturnTime" column="expected_return_time" />
+        <result property="actualReturnTime" column="actual_return_time" />
+        <result property="status" column="status" />
+        <result property="reviewerId" column="reviewer_id" />
+        <result property="reviewTime" column="review_time" />
+        <result property="clientName" column="clientName" />
+        <result property="detail" column="detail" />
+    </resultMap>
+
+    <select id="selectAll" resultMap="outRequestWithClientMap">
+        SELECT r.*, c.name AS clientName
+        FROM out_requests r
+                 LEFT JOIN clients c ON r.client_id = c.id
+    </select>
+
+    <select id="searchByClientName" resultMap="outRequestWithClientMap">
+        SELECT o.*, c.name AS clientName
         FROM out_requests o
         JOIN clients c ON o.client_id = c.id
         WHERE c.name LIKE CONCAT('%', #{name}, '%') AND o.status IS NOT NULL

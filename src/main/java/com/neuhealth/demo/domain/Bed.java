@@ -42,13 +42,6 @@ public class Bed {
         this.bedNumber = bedNumber;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public boolean isDeleted() {
         return isDeleted;
@@ -59,5 +52,13 @@ public class Bed {
     }
 
     public Bed() {
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,5 @@
 package com.neuhealth.demo.service.impl;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.neuhealth.demo.domain.CareItem;
 import com.neuhealth.demo.domain.ClientCareConfig;
 import com.neuhealth.demo.mapper.CareItemMapper;
@@ -27,10 +26,57 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
         this.careLevelItemMapper = careLevelItemMapper;
     }
 
+
+    //找到客户购买的项目列表
     @Override
-    public List<ClientCareConfig> getByClientId(int clientId) {
-        return clientCareConfigMapper.findByClientId(clientId);
+    public List<ClientCareConfig> getByClientId(int clientId, String name) {
+        // 如果 name 为空，则将其设置为空字符串
+        if (name == null) {
+            name = "";
+        }
+
+        // 调用 Mapper 层的方法，查询符合条件的护理配置项
+        List<ClientCareConfig> configs = clientCareConfigMapper.findByClientIdAndName(clientId, name);
+
+        // 处理每个护理配置项的状态
+        Date now = new Date();
+        for (ClientCareConfig config : configs) {
+            if (config.getEndDate() != null && config.getEndDate().before(now)) {
+                config.setStatus("expired");
+            } else if (config.getQuantity() < 0) {
+                config.setStatus("arrear");
+            } else {
+                config.setStatus("normal");
+            }
+        }
+
+        // 返回包含 item_name, quantity, endDate, 和 status 的列表
+        return configs;
     }
+
+
+
+
+    //找到客户未购买的项目列表
+    @Override
+    public List<CareItem> getEnabledItemsExcludingClientByName(int clientId, String name) {
+        return clientCareConfigMapper.selectEnabledItemsExcludingClientByName(clientId, name);
+    }
+
+
+    //续费
+    @Override
+    public void renewService(int configId, int addQuantity, Date newEndDate) {
+        clientCareConfigMapper.renewService(configId, addQuantity, newEndDate);
+    }
+
+    //删除
+    @Override
+    public int removeService(int configId) {
+        clientCareConfigMapper.removeService(configId);
+        return configId;
+    }
+
 
     @Override
     public void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds) {
@@ -62,15 +108,7 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
         this.careItemMapper = careItemMapper;
     }
 
-    @Override
-    public void renewService(int configId, int addQuantity, Date newEndDate) {
-        clientCareConfigMapper.renewService(configId, addQuantity, newEndDate);
-    }
 
-    @Override
-    public void removeService(int configId) {
-        clientCareConfigMapper.removeService(configId);
-    }
 
     @Override
     public void addService(int clientId, int itemId, int quantity, Date endDate) {
