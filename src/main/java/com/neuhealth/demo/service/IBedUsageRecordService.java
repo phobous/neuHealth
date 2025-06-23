@@ -9,9 +9,10 @@ import java.util.List;
 
 public interface IBedUsageRecordService extends IService<BedUsageRecord> {
 
-    List<BedUsageRecord> getAllBedUsageRecords();
-    public List<BedUsageRecord> selectBedUsageRecordsList(BedUsageRecord bedUsageRecords);
+    public List<BedUsageRecord> getAllBedUsageRecords();
+    public int getTotalCount();
+    public List<BedUsageRecord> selectBedUsageRecordsList(BedUsageRecord bedUsageRecord);
     List<BedUsageRecord> queryUsageRecords(String name, String status, Date startDate);
     boolean updateCheckOutDate(int recordId, Date checkOutDate);
-    boolean swapBed(int clientId, int oldBedId, int newBedId);
+    boolean swapBed(int id, int clientId, int oldBedId, int newBedId);
 }

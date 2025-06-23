@@ -26,6 +26,7 @@ public class BedController {
     public Map getAllBeds() {
         Map result = new HashMap<>();
         List<Bed> beds = iBedService.getAllBeds();
+        System.out.println("获取的床位信息："+beds);
         if(beds != null){
         result.put("beds",beds);
         result.put("if",1);
@@ -42,6 +43,7 @@ public class BedController {
     public Map getBedStatistics(){
         Map result = new HashMap<>();
         List< Map<String, Object> >stats = iBedService.getBedStatistics();
+        System.out.println("获取的状态信息："+stats);
         if(stats != null){
             result.put("beds",stats);
             result.put("if",1);
