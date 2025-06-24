@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 @Mapper
 public interface ClientCareConfigMapper extends BaseMapper<ClientCareConfig> {
@@ -28,14 +28,21 @@ public interface ClientCareConfigMapper extends BaseMapper<ClientCareConfig> {
 
 
     //添加项目
+    // 1. 根据 item_id 查找 care_level_id（可选传 level_id 过滤）
+    Integer getCareLevelIdByItemId(@Param("itemId") Integer itemId);
+
+    // 2. 插入一条记录
+    int insertClientCareConfig(ClientCareConfig config);
 
 
     //续费
     @Update("UPDATE client_care_config SET quantity = quantity + #{addQuantity}, end_date = #{newEndDate} WHERE id = #{configId}")
-    int renewService(@Param("configId") int configId, @Param("addQuantity") int addQuantity, @Param("newEndDate") Date newEndDate);
+    int renewService(@Param("configId") int configId, @Param("addQuantity") int addQuantity, @Param("newEndDate") LocalDate newEndDate);
 
 
     //移除项目
     @Delete("DELETE FROM client_care_config WHERE id = #{configId}")
     int removeService(@Param("configId") int configId);
+
+
 }

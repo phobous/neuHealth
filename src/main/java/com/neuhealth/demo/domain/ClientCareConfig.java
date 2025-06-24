@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -13,9 +14,9 @@ public class ClientCareConfig {
     private int clientId;
     private int careLevelId;
     private int itemId;
-    private Date startDate;
+    private LocalDate startDate;
     private int quantity;
-    private Date endDate;
+    private LocalDate endDate;
     //护理项目状态
     @TableField(exist = false)
     private String status;  // 动态字段：normal / expired / arrear

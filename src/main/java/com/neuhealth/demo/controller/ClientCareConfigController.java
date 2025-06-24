@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -56,7 +57,25 @@ public class ClientCareConfigController {
         return response;
     }
 
+    //添加项目
+    @PostMapping("/save")
+    public Map<String, Object> saveClientCareConfig(
+            @RequestParam Integer clientId,
+            @RequestParam Integer itemId,
+            @RequestParam Integer quantity,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
+        Map<String, Object> response = new HashMap<>();
+        try {
+            clientCareConfigService.saveClientCareConfig(clientId, itemId, endDate, quantity);
+            response.put("isOk", true);
+            response.put("msg", "护理服务添加成功");
+        } catch (Exception e) {
+            response.put("isOk", false);
+            response.put("msg", "添加失败: " + e.getMessage());
+        }
+        return response;
+    }
 
 
     //客户未购买的项目列表（带名字查询）
@@ -72,7 +91,7 @@ public class ClientCareConfigController {
     public Map<String, Object> renewService(
             @RequestParam int configId,
             @RequestParam int addQuantity,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date newEndDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newEndDate) {
 
         Map<String, Object> response = new HashMap<>();
         try {
@@ -85,6 +104,7 @@ public class ClientCareConfigController {
         }
         return response;
     }
+
 
     //删除护理项目
     @DeleteMapping("/{configId}")

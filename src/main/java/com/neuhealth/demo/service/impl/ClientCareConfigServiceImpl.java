@@ -9,8 +9,8 @@ import com.neuhealth.demo.service.IClientCareConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -30,33 +30,37 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     //找到客户购买的项目列表
     @Override
     public List<ClientCareConfig> getByClientId(int clientId, String name) {
-        // 如果 name 为空，则将其设置为空字符串
         if (name == null) {
             name = "";
         }
 
-        // 调用 Mapper 层的方法，查询符合条件的护理配置项
         List<ClientCareConfig> configs = clientCareConfigMapper.findByClientIdAndName(clientId, name);
 
-        // 处理每个护理配置项的状态
-        Date now = new Date();
+        LocalDate now = LocalDate.now();  // 改为 LocalDate
         for (ClientCareConfig config : configs) {
-            if (config.getEndDate() != null && config.getEndDate().before(now)) {
-                config.setStatus("expired");
+            if (config.getEndDate() != null && config.getEndDate().isBefore(now)) {
+                config.setStatus("过期");
             } else if (config.getQuantity() < 0) {
-                config.setStatus("arrear");
+                config.setStatus("欠费");
             } else {
-                config.setStatus("normal");
+                config.setStatus("正常");
             }
         }
 
-        // 返回包含 item_name, quantity, endDate, 和 status 的列表
         return configs;
     }
-
-
-
-
+    @Override
+    public void saveClientCareConfig(Integer clientId, Integer itemId, LocalDate endDate, Integer quantity) {
+        Integer careLevelId = clientCareConfigMapper.getCareLevelIdByItemId(itemId); // ← 修正大小写
+        ClientCareConfig config = new ClientCareConfig();
+        config.setClientId(clientId);
+        config.setItemId(itemId);
+        config.setCareLevelId(careLevelId);
+        config.setStartDate(LocalDate.now());
+        config.setEndDate(endDate);
+        config.setQuantity(quantity);
+        clientCareConfigMapper.insertClientCareConfig(config); // ← 修正大小写
+    }
     //找到客户未购买的项目列表
     @Override
     public List<CareItem> getEnabledItemsExcludingClientByName(int clientId, String name) {
@@ -66,7 +70,7 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
 
     //续费
     @Override
-    public void renewService(int configId, int addQuantity, Date newEndDate) {
+    public void renewService(int configId, int addQuantity, LocalDate newEndDate) {
         clientCareConfigMapper.renewService(configId, addQuantity, newEndDate);
     }
 
@@ -80,8 +84,9 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
 
     @Override
     public void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds) {
-        Date now = new Date();
-        Date threeMonthsLater = new Date(now.getTime() + 90L * 24 * 60 * 60 * 1000);
+        LocalDate now = LocalDate.now();
+        LocalDate threeMonthsLater = now.plusMonths(3);
+
         List<ClientCareConfig> configs = new ArrayList<>();
         for (int itemId : itemIds) {
             ClientCareConfig config = new ClientCareConfig();
@@ -93,6 +98,7 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
             config.setEndDate(threeMonthsLater);
             configs.add(config);
         }
+
         for (ClientCareConfig config : configs) {
             clientCareConfigMapper.insert(config);
         }
@@ -111,12 +117,12 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
 
 
     @Override
-    public void addService(int clientId, int itemId, int quantity, Date endDate) {
+    public void addService(int clientId, int itemId, int quantity, LocalDate endDate) {
         ClientCareConfig config = new ClientCareConfig();
         config.setClientId(clientId);
         config.setItemId(itemId);
         config.setQuantity(quantity);
-        config.setStartDate(new Date());
+        config.setStartDate(LocalDate.now());
         config.setEndDate(endDate);
         clientCareConfigMapper.insert(config);
     }
