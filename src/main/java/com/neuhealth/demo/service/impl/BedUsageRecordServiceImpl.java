@@ -1,5 +1,7 @@
 package com.neuhealth.demo.service.impl;
 
+import com.neuhealth.demo.domain.ClientBedMapping;
+import com.neuhealth.demo.mapper.ClientBedMappingMapper;
 import com.neuhealth.demo.util.TimeAdditionUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.Bed;
@@ -23,6 +25,8 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
     private BedMapper bedMapper;
     @Autowired
     private ClientMapper clientMapper;
+    @Autowired
+    private ClientBedMappingMapper clientBedMappingMapper;
 
     @Autowired
     private BedUsageRecordMapper usageRecordMapper;
@@ -93,6 +97,13 @@ public class BedUsageRecordServiceImpl extends ServiceImpl<BedUsageRecordMapper,
         Client client=clientMapper.selectById(clientId);
         client.setBedId(newBedId);
         int result2=clientMapper.updateById(client);
+        //修改床位用户对应表
+        ClientBedMapping clientBedMapping = clientBedMappingMapper.selectByClientId(clientId);
+        clientBedMapping.setBedId(newBedId);
+        clientBedMapping.setCreatedAt(TimeAdditionUtil.add8Hours(clientBedMapping.getCreatedAt()));
+        clientBedMapping.setAssignedAt(TimeAdditionUtil.add8Hours(clientBedMapping.getAssignedAt()));
+        clientBedMapping.setUpdatedAt(TimeAdditionUtil.add8Hours(now));
+        clientBedMappingMapper.updateById(clientBedMapping);
         // 3. 更新新床位状态
         Bed newBed=bedMapper.selectById(newBedId);
         newBed.setStatus("有人");
