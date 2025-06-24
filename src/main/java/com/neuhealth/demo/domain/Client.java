@@ -1,6 +1,7 @@
 package com.neuhealth.demo.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -23,6 +24,7 @@ public class Client {
     private Date checkInDate;
     private Date contractEndDate;
     private String type;
+    @TableField("is_deleted")
     private boolean isDeleted;
     private Date createdAt;
     private int bedId;
@@ -124,7 +126,7 @@ public class Client {
         this.type = type;
     }
 
-    public boolean isDeleted() {
+    public boolean getisDeleted() {
         return isDeleted;
     }
 
@@ -148,7 +150,7 @@ public class Client {
         this.bedId = bedId;
     }
 
-    public boolean isAllocated() {
+    public boolean getisAllocated() {
         return isAllocated;
     }
 

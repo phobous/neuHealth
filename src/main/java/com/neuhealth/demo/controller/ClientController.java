@@ -1,5 +1,6 @@
 package com.neuhealth.demo.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,24 @@ public class ClientController {
     public List<Client> findAll(){
         return clientService.findAll();
     }
+    //分页
+    @GetMapping("/page")
+    public Map<String, Object> getClientsPage(
+            @RequestParam(defaultValue = "1") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String type
+    ) {
+        Map<String, Object> res = new HashMap<>();
+        // 调用分页查询
+        Page<Client> pageResult = clientService.findClientsByPage(pageNum, pageSize, name, type);
+        res.put("isOk", true);
+        res.put("msg", "分页查询成功");
+        res.put("records", pageResult.getRecords());
+        res.put("total", pageResult.getTotal());
+        return res;
+    }
+
     //展示逻辑删除后列表
     @GetMapping("/active")
     public Map<String, Object> getAllActiveClients() {
