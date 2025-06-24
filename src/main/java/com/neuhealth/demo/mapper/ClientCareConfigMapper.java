@@ -3,8 +3,6 @@
 package com.neuhealth.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.neuhealth.demo.domain.CareLevel;
-import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.domain.ClientCareConfig;
 import com.neuhealth.demo.domain.ClientInfoDTO;
 import org.apache.ibatis.annotations.*;

@@ -13,4 +13,6 @@ import java.util.List;
 @Mapper
 public interface CaregiverMapper extends BaseMapper<Caregiver> {
     List<Caregiver> selectByNameLike(@Param("name") String name);
+
+
 }

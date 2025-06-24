@@ -13,7 +13,9 @@ public class User {
     private String username;
     private String password;
     private String realName;
+    private String gender;
     private String phone;
+    private String email;
     private long roleId;
     private boolean status;
     private Date createdAt;

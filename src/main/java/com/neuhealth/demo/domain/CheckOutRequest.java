@@ -8,12 +8,13 @@ import java.util.Date;
 @Data
 @TableName("check_out_requests")
 public class CheckOutRequest {
-    private int id;
-    private int clientId;
+    private Integer id;
+    private Integer clientId;
     private String type;
     private String reason;
     private Date requestedAt;
     private String status;
-    private int reviewerId;
+    private Integer reviewerId;
     private Date reviewTime;
+    private String detail;
 }
