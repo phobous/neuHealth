@@ -8,7 +8,7 @@ import lombok.Data;
 public class ClientContact {
     private int id;
     private int clientId;
-    private String name;
+    private String contactName;
     private String phone;
     private String address;
 }

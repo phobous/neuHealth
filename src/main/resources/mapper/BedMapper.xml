@@ -34,4 +34,9 @@
         FROM beds b
         LEFT JOIN rooms r ON b.room_id = r.id
     </select>
+
+    <select id="getBedsByRoom" resultType="com.neuhealth.demo.domain.Bed">
+        SELECT * FROM beds WHERE room_id = #{roomId} AND is_deleted = FALSE
+    </select>
+
 </mapper>
