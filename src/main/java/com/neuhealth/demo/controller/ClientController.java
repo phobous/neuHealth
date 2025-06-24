@@ -2,6 +2,7 @@ package com.neuhealth.demo.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neuhealth.demo.domain.Client;
+import com.neuhealth.demo.domain.ClientRegisterDTO;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -66,8 +67,8 @@ public class ClientController {
     }
     //添加客户
     @PostMapping
-    public Map addClient(@RequestBody Client client){
-        this.clientService.registerClient(client);
+    public Map addClient(@RequestBody ClientRegisterDTO dto){
+        this.clientService.registerClient(dto);
         Map res = new HashMap();
         res.put("isOk",true);
         res.put("msg","新的客户添加成功！");
