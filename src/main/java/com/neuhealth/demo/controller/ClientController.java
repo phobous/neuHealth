@@ -103,5 +103,19 @@ public class ClientController {
         return res;
     }
 
+ /**   @GetMapping("/unallocated")
+    @ResponseBody
+    public Map<String, Object> getUnallocatedClients() {
+        // 只传 false，表示未分配
+        List<Client> clients = clientService.searchClientsNoCg(false);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("isOk", true);
+        response.put("count", clients.size());
+        response.put("data", clients);
+        response.put("msg", "未分配客户查询成功");
+        return response;
+    }*/
+
 
 }

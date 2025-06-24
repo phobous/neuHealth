@@ -8,13 +8,14 @@ import java.util.Date;
 @Data
 @TableName("out_requests")
 public class OutRequest {
-    private int id;
-    private int clientId;
+    private Integer id;
+    private Integer clientId;
     private String reason;
     private Date outTime;
     private Date expectedReturnTime;
     private Date actualReturnTime;
     private String status;
-    private int reviewerId;
+    private Integer reviewerId;
     private Date reviewTime;
+    private String detail;
 }

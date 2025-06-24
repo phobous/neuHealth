@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuhealth.demo.mapper.CareConfigMapper">
+
+    <resultMap id="ClientCareConfigResultMap" type="com.neuhealth.demo.domain.ClientCareConfig">
+        <result property="id" column="id"/>
+        <result property="clientId" column="client_id"/>
+        <result property="careLevelId" column="care_level_id"/>
+        <result property="itemId" column="item_id"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="quantity" column="quantity"/>
+        <!-- 注意：status 是动态字段，不从数据库取 -->
+    </resultMap>
+
+    <resultMap id="CareItemResultMap" type="com.neuhealth.demo.domain.CareItem">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="price" column="price"/>
+        <result property="cycle" column="cycle"/>
+        <result property="times" column="times"/>
+        <result property="description" column="description"/>
+        <result property="status" column="status"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+
+    <!-- 根据客户查找项目列表 -->
+    <select id="findByClientIdAndName" resultMap="ClientCareConfigResultMap" parameterType="map">
+        SELECT ccc.*, ci.name AS item_name, ci.price AS item_price, ci.description AS item_description
+        FROM client_care_config ccc
+        JOIN care_items ci ON ccc.item_id = ci.id
+        WHERE ccc.client_id = #{clientId}
+        <if test="name != null and name != ''">
+            AND ci.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+    </select>
+
+    <!-- 添加项目 -->
+    <!-- 1. 根据 item_id 查询 care_level_id -->
+    <select id="getCareLevelIdByItemId" resultType="int">
+        SELECT level_id
+        FROM care_level_items
+        WHERE item_id = #{itemId}
+            LIMIT 1
+    </select>
+
+    <!-- 2. 插入 client_care_config 记录 -->
+    <insert id="insertClientCareConfig" parameterType="com.neuhealth.demo.domain.ClientCareConfig">
+        INSERT INTO client_care_config (
+            client_id,
+            care_level_id,
+            item_id,
+            start_date,
+            end_date,
+            quantity
+        ) VALUES (
+                     #{clientId},
+                     #{careLevelId},
+                     #{itemId},
+                     #{startDate},
+                     #{endDate},
+                     #{quantity}
+                 )
+    </insert>
+
+    <!-- 根据客户查找项目列表 -->
+    <select id="findByClientId" resultMap="ClientCareConfigResultMap" parameterType="int">
+        SELECT *
+        FROM client_care_config
+        WHERE client_id = #{clientId}
+    </select>
+
+    <!-- 续费
+    <update id="renewService" parameterType="map">
+        UPDATE client_care_config
+        SET quantity = quantity + #{addQuantity}, end_date = #{newEndDate}
+        WHERE id = #{configId}
+    </update>-->
+
+    <!-- 删除护理项目
+    <delete id="removeService" parameterType="int">
+        DELETE FROM client_care_config WHERE id = #{configId}
+    </delete>-->
+
+    <!-- 得到当前客户未购买的项目（带名字的模糊查询） -->
+    <select id="selectEnabledItemsExcludingClientByName" resultMap="CareItemResultMap" parameterType="map">
+        SELECT ci.*
+        FROM care_items ci
+        WHERE ci.status = '启用'
+        AND ci.is_deleted = 0
+        AND ci.id NOT IN (
+        SELECT item_id
+        FROM client_care_config
+        WHERE client_id = #{clientId}
+        )
+        <if test="name != null and name != ''">
+            AND ci.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+    </select>
+
+</mapper>

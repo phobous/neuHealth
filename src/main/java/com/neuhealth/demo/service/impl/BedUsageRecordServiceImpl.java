@@ -1,12 +1,12 @@
 package com.neuhealth.demo.service.impl;
 
+import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.domain.ClientBedMapping;
 import com.neuhealth.demo.mapper.ClientBedMappingMapper;
 import com.neuhealth.demo.util.TimeAdditionUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.Bed;
 import com.neuhealth.demo.domain.BedUsageRecord;
-import com.neuhealth.demo.domain.Client;
 import com.neuhealth.demo.mapper.BedMapper;
 import com.neuhealth.demo.mapper.BedUsageRecordMapper;
 import com.neuhealth.demo.mapper.ClientMapper;

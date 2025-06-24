@@ -112,22 +112,6 @@ public class ClientCareConfigController {
     }
 
 
-    /** 续费护理服务 */
-    @PostMapping("/renew")
-    public Map<String, Object> renewService(@RequestParam int configId,
-                                            @RequestParam int addQuantity,
-                                            @RequestParam Date newEndDate) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            clientCareConfigService.renewService(configId, addQuantity, newEndDate);
-            result.put("isOk", true);
-            result.put("msg", "续费成功");
-        } catch (Exception e) {
-            result.put("isOk", false);
-            result.put("msg", "续费失败: " + e.getMessage());
-        }
-        return result;
-    }
 
     /** 移除护理服务 */
     @PostMapping("/removeService")

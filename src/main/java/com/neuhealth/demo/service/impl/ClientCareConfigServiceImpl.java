@@ -8,8 +8,8 @@ import com.neuhealth.demo.service.IClientCareConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,25 +18,28 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     private ClientCareConfigMapper clientCareConfigMapper;
     private CareLevelItemMapper careLevelItemMapper;
     private CareItemMapper careItemMapper;
+
     @Override
     public List<ClientInfoDTO> getClientsByName(String name) {
-        // 假设你有一个 ClientInfoMapper 或相似的数据库访问类
-        return clientCareConfigMapper.findClientsByNameLike(name);  // 使用类似 MyBatis 的方法模糊查询
+        return clientCareConfigMapper.findClientsByNameLike(name);
     }
 
     @Override
     public List<ClientInfoDTO> getAllClientInfo() {
         return clientCareConfigMapper.getAllClientInfo();
     }
+
     @Autowired
     public ClientCareConfigServiceImpl(ClientCareConfigMapper clientCareConfigMapper, CareLevelItemMapper careLevelItemMapper) {
         this.clientCareConfigMapper = clientCareConfigMapper;
         this.careLevelItemMapper = careLevelItemMapper;
     }
+
     @Override
     public List<CareItem> queryItemsByCareLevel(int careLevelId) {
         return careLevelItemMapper.selectItemsByLevelId(careLevelId);
     }
+
     @Override
     public List<ClientCareConfig> getByClientId(int clientId) {
         return clientCareConfigMapper.findByClientId(clientId);
@@ -44,8 +47,8 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
 
     @Override
     public void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds) {
-        Date now = new Date();
-        Date threeMonthsLater = new Date(now.getTime() + 90L * 24 * 60 * 60 * 1000);
+        LocalDate now = LocalDate.now();
+        LocalDate threeMonthsLater = now.plusMonths(3);
         List<ClientCareConfig> configs = new ArrayList<>();
         for (int itemId : itemIds) {
             ClientCareConfig config = new ClientCareConfig();
@@ -72,10 +75,6 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
         this.careItemMapper = careItemMapper;
     }
 
-    @Override
-    public void renewService(int configId, int addQuantity, Date newEndDate) {
-        clientCareConfigMapper.renewService(configId, addQuantity, newEndDate);
-    }
 
     @Override
     public void removeService(int configId) {
@@ -83,12 +82,12 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     }
 
     @Override
-    public void addService(int clientId, int itemId, int quantity, Date endDate) {
+    public void addService(int clientId, int itemId, int quantity, LocalDate endDate) {
         ClientCareConfig config = new ClientCareConfig();
         config.setClientId(clientId);
         config.setItemId(itemId);
         config.setQuantity(quantity);
-        config.setStartDate(new Date());
+        config.setStartDate(LocalDate.now());
         config.setEndDate(endDate);
         clientCareConfigMapper.insert(config);
     }
