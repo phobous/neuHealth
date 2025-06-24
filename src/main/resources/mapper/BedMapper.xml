@@ -9,8 +9,8 @@
         SELECT
             COUNT(*) AS total,
             SUM(CASE WHEN status = '空闲' THEN 1 ELSE 0 END) AS idle,
-            SUM(CASE WHEN status = '有人' THEN 1 ELSE 0 END) AS occupied,
-            SUM(CASE WHEN status = '外出' THEN 1 ELSE 0 END) AS out
+            SUM(CASE WHEN status = '外出' THEN 1 ELSE 0 END) AS out_count,
+            SUM(CASE WHEN status = '有人' THEN 1 ELSE 0 END) AS occupied
         FROM beds
         WHERE is_deleted = 0
     </select>
@@ -21,6 +21,18 @@
         WHERE room_id = #{roomId}
           AND status = '空闲'
           AND is_deleted = 0
+    </select>
+    <select id="getAvailableBeds" resultType="com.neuhealth.demo.domain.Bed">
+        SELECT * FROM beds
+        WHERE room_id = #{roomId}
+          AND status = '空闲'
+          AND is_deleted = 0
+    </select>
+
+    <select id="getAllBeds" resultType="com.neuhealth.demo.domain.Bed">
+        SELECT b.*, r.floor AS floor
+        FROM beds b
+        LEFT JOIN rooms r ON b.room_id = r.id
     </select>
 
     <select id="getBedsByRoom" resultType="com.neuhealth.demo.domain.Bed">

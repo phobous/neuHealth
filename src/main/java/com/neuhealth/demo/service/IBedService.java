@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IBedService extends IService<Bed> {
+    List<Bed> getAllBeds();
     List<Map<String, Object>> getBedStatistics();
     List<Bed> getBedsByRoom(int roomId);
     List<Bed> getAvailableBeds(int roomId);

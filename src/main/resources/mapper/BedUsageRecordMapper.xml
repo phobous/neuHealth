@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neuhealth.demo.mapper.BedUsageRecordMapper">
+
+    <!-- 完整的ResultMap定义，包含所有需要的字段映射 -->
+    <resultMap type="com.neuhealth.demo.domain.BedUsageRecord" id="BedUsageRecordsResult">
+        <id property="id" column="id" />
+        <result property="clientId" column="client_id" />
+        <result property="bedId" column="bed_id" />
+        <result property="checkInDate" column="check_in_date" />
+        <result property="checkOutDate" column="check_out_date" />
+        <result property="status" column="status" />
+        <result property="isDeleted" column="is_deleted" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+        <result property="bedNumber" column="bed_number" />
+        <result property="clientName" column="client_name" />
+        <result property="clientGender" column="client_gender" />
+    </resultMap>
+
+    <sql id="selectBedUsageRecordsVo">
+        select id, client_id, bed_id, check_in_date, check_out_date, status, is_deleted, created_at, updated_at from bed_usage_records
+    </sql>
+
+    <select id="getAllBedUsageRecords" resultType="com.neuhealth.demo.domain.BedUsageRecord">
+        SELECT * FROM bed_usage_records
+    </select>
+
+    <select id="selectBedUsageRecordsList" parameterType="com.neuhealth.demo.domain.BedUsageRecord" resultMap="BedUsageRecordsResult">
+        <include refid="selectBedUsageRecordsVo"/>
+        <where>
+            <if test="clientId != null "> and client_id like concat('%', #{clientId}, '%')</if>
+            <if test="checkInDate != null "> and check_in_date = #{checkInDate}</if>
+        </where>
+    </select>
+
+    <select id="selectBedUsageRecordsById" parameterType="Long" resultMap="BedUsageRecordsResult">
+        <include refid="selectBedUsageRecordsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBedUsageRecords" parameterType="com.neuhealth.demo.domain.BedUsageRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into bed_usage_records
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="clientId != null">client_id,</if>
+            <if test="bedId != null">bed_id,</if>
+            <if test="checkInDate != null">check_in_date,</if>
+            <if test="checkOutDate != null">check_out_date,</if>
+            <if test="status != null">status,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="createdAt != null">created_at,</if>
+            <if test="updatedAt != null">updated_at,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="clientId != null">#{clientId},</if>
+            <if test="bedId != null">#{bedId},</if>
+            <if test="checkInDate != null">#{checkInDate},</if>
+            <if test="checkOutDate != null">#{checkOutDate},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="createdAt != null">#{createdAt},</if>
+            <if test="updatedAt != null">#{updatedAt},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBedUsageRecords" parameterType="com.neuhealth.demo.domain.BedUsageRecord">
+        update bed_usage_records
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="clientId != null">client_id = #{clientId},</if>
+            <if test="bedId != null">bed_id = #{bedId},</if>
+            <if test="checkInDate != null">check_in_date = #{checkInDate},</if>
+            <if test="checkOutDate != null">check_out_date = #{checkOutDate},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="createdAt != null">created_at = #{createdAt},</if>
+            <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBedUsageRecordsById" parameterType="Long">
+        delete from bed_usage_records where id = #{id}
+    </delete>
+
+    <delete id="deleteBedUsageRecordsByIds" parameterType="String">
+        delete from bed_usage_records where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="endOldBedUsage">
+        UPDATE bed_usage_records
+        SET check_out_date = #{endDate},
+        status = '空闲',
+        updated_at = NOW()
+        WHERE client_id = #{clientId}
+        AND status = 'ACTIVE'
+    </update>
+
+    <!-- 关联查询，修正SQL语法和ResultMap引用 -->
+    <select id="selectAllWithBedNumber" resultMap="BedUsageRecordsResult">
+        SELECT SQL_CALC_FOUND_ROWS
+        bur.*,
+        b.bed_number,
+        c.name AS client_name,
+        c.gender AS client_gender
+        FROM
+        bed_usage_records bur
+        JOIN
+        beds b ON bur.bed_id = b.id
+        JOIN
+        clients c ON bur.client_id = c.id
+        WHERE
+        bur.is_deleted = FALSE
+    </select>
+    <select id="getTotalCount" resultType="int">
+        SELECT FOUND_ROWS()
+    </select>
+    <!-- 根据ID查询，修正SQL语法和ResultMap引用 -->
+    <select id="selectByIdWithBedNumber" resultMap="BedUsageRecordsResult">
+        SELECT
+        bur.*,
+        b.bed_number,
+        c.name AS client_name,
+        c.gender AS client_gender
+        FROM
+        bed_usage_records bur
+        JOIN
+        beds b ON bur.bed_id = b.id
+        JOIN
+        clients c ON bur.client_id = c.id
+        WHERE
+        bur.id = #{id}
+        AND bur.is_deleted = FALSE
+    </select>
+</mapper>
