@@ -36,7 +36,7 @@ public class CareConfigServiceImpl implements ICareConfigService {
 
         List<ClientCareConfig> configs = careConfigMapper.findByClientIdAndName(clientId, name);
 
-        LocalDate now = LocalDate.now();  // 改为 LocalDate
+       /* LocalDate now = LocalDate.now();  // 改为 LocalDate
         for (ClientCareConfig config : configs) {
             if (config.getEndDate() != null && config.getEndDate().isBefore(now)) {
                 config.setStatus("过期");
@@ -45,7 +45,7 @@ public class CareConfigServiceImpl implements ICareConfigService {
             } else {
                 config.setStatus("正常");
             }
-        }
+        }*/
 
         return configs;
     }

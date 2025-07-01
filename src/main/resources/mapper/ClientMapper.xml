@@ -21,11 +21,17 @@
         <result property="createdAt" column="created_at"/>
         <result property="bedId" column="bed_id"/>
         <result property="isAllocated" column="is_allocated"/>
+        <result property="hasAbnormalProject" column="has_abnormal_project"/>
+
     </resultMap>
 
     <sql id="selectClientsVo">
-        select id, name, gender, age, nation, birth_date, id_card, blood_type, meal_id, check_in_date, contract_end_date, type, is_deleted, created_at, bed_id, is_allocated from clients
+        select id, name, gender, age, nation, birth_date, id_card, blood_type, meal_id,
+               check_in_date, contract_end_date, type, is_deleted, created_at, bed_id,
+               is_allocated, has_abnormal_project
+        from clients
     </sql>
+
 
     <select id="searchClients" resultMap="ClientsResult" parameterType="map">
         <include refid="selectClientsVo"/>

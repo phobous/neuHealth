@@ -29,6 +29,7 @@ public class Client {
     private Date createdAt;
     private int bedId;
     private boolean isAllocated;
+    private boolean hasAbnormalProject;
 
     public Integer getId() {
         return id;

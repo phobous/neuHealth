@@ -13,7 +13,7 @@
         <result property="startDate" column="start_date"/>
         <result property="endDate" column="end_date"/>
         <result property="quantity" column="quantity"/>
-        <!-- 注意：status 是动态字段，不从数据库取 -->
+        <result property="status" column="status"/>
     </resultMap>
 
     <resultMap id="CareItemResultMap" type="com.neuhealth.demo.domain.CareItem">

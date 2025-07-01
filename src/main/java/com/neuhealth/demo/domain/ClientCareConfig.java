@@ -18,7 +18,7 @@ public class ClientCareConfig {
     private int quantity;
     private LocalDate endDate;
     //护理项目状态
-    @TableField(exist = false)
+
     private String status;  // 动态字段：normal / expired / arrear
 
     // 添加 itemName 字段
