@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.neuhealth.demo.mapper.ClientMapper">
-    
-    <resultMap type="Client" id="ClientsResult">
-        <result property="id"    column="id"    />
-        <result property="name"    column="name"    />
-        <result property="gender"    column="gender"    />
-        <result property="age"    column="age"    />
-        <result property="nation"    column="nation"    />
-        <result property="birthDate"    column="birth_date"    />
-        <result property="idCard"    column="id_card"    />
-        <result property="bloodType"    column="blood_type"    />
-        <result property="mealId"    column="meal_id"    />
-        <result property="checkInDate"    column="check_in_date"    />
-        <result property="contractEndDate"    column="contract_end_date"    />
-        <result property="type"    column="type"    />
-        <result property="isDeleted"    column="is_deleted"    />
-        <result property="createdAt"    column="created_at"    />
-        <result property="bedId"    column="bed_id"    />
-        <result property="isAllocated"    column="is_allocated"    />
+
+    <resultMap type="com.neuhealth.demo.domain.Client" id="ClientsResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="age" column="age"/>
+        <result property="nation" column="nation"/>
+        <result property="birthDate" column="birth_date"/>
+        <result property="idCard" column="id_card"/>
+        <result property="bloodType" column="blood_type"/>
+        <result property="mealId" column="meal_id"/>
+        <result property="checkInDate" column="check_in_date"/>
+        <result property="contractEndDate" column="contract_end_date"/>
+        <result property="type" column="type"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="bedId" column="bed_id"/>
+        <result property="isAllocated" column="is_allocated"/>
     </resultMap>
 
     <sql id="selectClientsVo">
-        select id, name, gender, age, nation, birth_date, id_card, blood_type, meal_id, check_in_date, contract_end_date, type, is_deleted, created_at, bed_id,is_allocated from clients
+        select id, name, gender, age, nation, birth_date, id_card, blood_type, meal_id, check_in_date, contract_end_date, type, is_deleted, created_at, bed_id, is_allocated from clients
     </sql>
 
     <select id="searchClients" resultMap="ClientsResult" parameterType="map">
@@ -38,7 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
-    <insert id="registerClient" parameterType="Client" useGeneratedKeys="true" keyProperty="id">
+    <insert id="registerClient" parameterType="com.neuhealth.demo.domain.Client" useGeneratedKeys="true" keyProperty="id">
         insert into clients
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createdAt != null">created_at,</if>
             <if test="bedId != null">bed_id,</if>
             <if test="isAllocated != null">is_allocated,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="gender != null and gender != ''">#{gender},</if>
@@ -73,15 +73,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createdAt != null">#{createdAt},</if>
             <if test="bedId != null">#{bedId},</if>
             <if test="isAllocated != null">#{isAllocated},</if>
-         </trim>
+        </trim>
     </insert>
 
-    <update id="updateClient" parameterType="Client">
+    <update id="updateClient" parameterType="com.neuhealth.demo.domain.Client">
         update clients
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="gender != null and gender != ''">gender = #{gender},</if>
-            <if test="age != null">meal_id = #{age},</if>
+            <if test="age != null">age = #{age},</if>
             <if test="nation != null">nation = #{nation},</if>
             <if test="birthDate != null">birth_date = #{birthDate},</if>
             <if test="idCard != null">id_card = #{idCard},</if>
@@ -108,7 +108,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
-
 
     <update id="updateBedStatus" parameterType="map">
         UPDATE beds SET status = #{status} WHERE id = #{bedId}

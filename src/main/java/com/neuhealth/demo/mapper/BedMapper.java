@@ -10,6 +10,8 @@ import java.util.Map;
 
 @Mapper
 public interface BedMapper extends BaseMapper<Bed> {
+
+    List<Bed> getAllBeds();
     List<Map<String, Object>> countBedsSummary();
 
     List<Bed> getBedsByRoom(@Param("roomId") int roomId);

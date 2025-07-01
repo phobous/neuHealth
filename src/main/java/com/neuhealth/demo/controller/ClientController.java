@@ -2,6 +2,7 @@ package com.neuhealth.demo.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.neuhealth.demo.domain.Client;
+import com.neuhealth.demo.domain.ClientRegisterDTO;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -66,8 +67,8 @@ public class ClientController {
     }
     //添加客户
     @PostMapping
-    public Map addClient(@RequestBody Client client){
-        this.clientService.registerClient(client);
+    public Map addClient(@RequestBody ClientRegisterDTO dto){
+        this.clientService.registerClient(dto);
         Map res = new HashMap();
         res.put("isOk",true);
         res.put("msg","新的客户添加成功！");
@@ -101,6 +102,20 @@ public class ClientController {
         res.put("msg","修改成功");
         return res;
     }
+
+ /**   @GetMapping("/unallocated")
+    @ResponseBody
+    public Map<String, Object> getUnallocatedClients() {
+        // 只传 false，表示未分配
+        List<Client> clients = clientService.searchClientsNoCg(false);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("isOk", true);
+        response.put("count", clients.size());
+        response.put("data", clients);
+        response.put("msg", "未分配客户查询成功");
+        return response;
+    }*/
 
 
 }

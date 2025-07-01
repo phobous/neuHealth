@@ -4,12 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.neuhealth.demo.domain.Bed;
-import com.neuhealth.demo.domain.Client;
-import com.neuhealth.demo.domain.ClientBedMapping;
-import com.neuhealth.demo.mapper.BedMapper;
-import com.neuhealth.demo.mapper.ClientBedMappingMapper;
-import com.neuhealth.demo.mapper.ClientMapper;
+import com.neuhealth.demo.domain.*;
+import com.neuhealth.demo.mapper.*;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +26,10 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     private BedMapper bedMapper;
     @Autowired
     private ClientBedMappingMapper clientBed;
+    @Autowired
+    private ClientContactMapper clientContact;
+    @Autowired
+    private BedUsageRecordMapper bedUsageRecordMapper;
 
     @Override
     public List<Client> findAll() {
@@ -63,6 +63,8 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Override
     public List<Client> searchClients(String name, String type) {
+        QueryWrapper<Client> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_deleted", 0);
         return clientMapper.searchClients(name, type);
     }
 
@@ -72,7 +74,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
-    public boolean registerClient(Client client) {
+    public boolean registerClient(ClientRegisterDTO dto) {
+        Client client = dto.getClient();
+        ClientContact contact = dto.getContact();
         if (client.getContractEndDate().before(client.getCheckInDate())) {
             throw new IllegalArgumentException("合同到期时间不能早于入住时间");
         }
@@ -90,12 +94,28 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
             mapping.setClientId(client.getId());
             mapping.setBedId(client.getBedId());
             mapping.setAssignedAt(client.getCreatedAt());
-            mapping.setIsDeleted(false);
+            mapping.setDeleted(false);
             mapping.setCreatedAt(new Date());
             mapping.setUpdatedAt(new Date());
+            BedUsageRecord usageRecord = new BedUsageRecord();
+            usageRecord.setClientId(client.getId());
+            usageRecord.setBedId(client.getBedId());
+            usageRecord.setCheckInDate(client.getCheckInDate());
+            usageRecord.setCheckOutDate(null);
+            usageRecord.setStatus("正在使用");
+            usageRecord.setCreatedAt(new Date());
+            usageRecord.setUpdatedAt(new Date());
 
+            bedUsageRecordMapper.insert(usageRecord);
 
             clientBed.insert(mapping);
+
+            if (contact != null) {
+                contact.setClientId(client.getId());
+                contact.setContactName(contact.getContactName());
+                contact.setPhone(contact.getPhone());
+                clientContact.insert(contact);
+            }
         }
         return saved;
     }
@@ -148,7 +168,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         LocalDate localDate = LocalDate.parse(birthStr, formatter);
         localDate = localDate.plusDays(1);
 
-        // 2. 转换为 java.util.Date
+
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 

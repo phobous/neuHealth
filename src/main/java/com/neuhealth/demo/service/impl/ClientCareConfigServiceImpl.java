@@ -1,7 +1,6 @@
 package com.neuhealth.demo.service.impl;
 
-import com.neuhealth.demo.domain.CareItem;
-import com.neuhealth.demo.domain.ClientCareConfig;
+import com.neuhealth.demo.domain.*;
 import com.neuhealth.demo.mapper.CareItemMapper;
 import com.neuhealth.demo.mapper.ClientCareConfigMapper;
 import com.neuhealth.demo.mapper.CareLevelItemMapper;
@@ -20,73 +19,36 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     private CareLevelItemMapper careLevelItemMapper;
     private CareItemMapper careItemMapper;
 
+    @Override
+    public List<ClientInfoDTO> getClientsByName(String name) {
+        return clientCareConfigMapper.findClientsByNameLike(name);
+    }
+
+    @Override
+    public List<ClientInfoDTO> getAllClientInfo() {
+        return clientCareConfigMapper.getAllClientInfo();
+    }
+
     @Autowired
     public ClientCareConfigServiceImpl(ClientCareConfigMapper clientCareConfigMapper, CareLevelItemMapper careLevelItemMapper) {
         this.clientCareConfigMapper = clientCareConfigMapper;
         this.careLevelItemMapper = careLevelItemMapper;
     }
 
-
-    //找到客户购买的项目列表
     @Override
-    public List<ClientCareConfig> getByClientId(int clientId, String name) {
-        if (name == null) {
-            name = "";
-        }
-
-        List<ClientCareConfig> configs = clientCareConfigMapper.findByClientIdAndName(clientId, name);
-
-        LocalDate now = LocalDate.now();  // 改为 LocalDate
-        for (ClientCareConfig config : configs) {
-            if (config.getEndDate() != null && config.getEndDate().isBefore(now)) {
-                config.setStatus("过期");
-            } else if (config.getQuantity() < 0) {
-                config.setStatus("欠费");
-            } else {
-                config.setStatus("正常");
-            }
-        }
-
-        return configs;
-    }
-    @Override
-    public void saveClientCareConfig(Integer clientId, Integer itemId, LocalDate endDate, Integer quantity) {
-        Integer careLevelId = clientCareConfigMapper.getCareLevelIdByItemId(itemId); // ← 修正大小写
-        ClientCareConfig config = new ClientCareConfig();
-        config.setClientId(clientId);
-        config.setItemId(itemId);
-        config.setCareLevelId(careLevelId);
-        config.setStartDate(LocalDate.now());
-        config.setEndDate(endDate);
-        config.setQuantity(quantity);
-        clientCareConfigMapper.insertClientCareConfig(config); // ← 修正大小写
-    }
-    //找到客户未购买的项目列表
-    @Override
-    public List<CareItem> getEnabledItemsExcludingClientByName(int clientId, String name) {
-        return clientCareConfigMapper.selectEnabledItemsExcludingClientByName(clientId, name);
+    public List<CareItem> queryItemsByCareLevel(int careLevelId) {
+        return careLevelItemMapper.selectItemsByLevelId(careLevelId);
     }
 
-
-    //续费
     @Override
-    public void renewService(int configId, int addQuantity, LocalDate newEndDate) {
-        clientCareConfigMapper.renewService(configId, addQuantity, newEndDate);
+    public List<ClientCareConfig> getByClientId(int clientId) {
+        return clientCareConfigMapper.findByClientId(clientId);
     }
-
-    //删除
-    @Override
-    public int removeService(int configId) {
-        clientCareConfigMapper.removeService(configId);
-        return configId;
-    }
-
 
     @Override
     public void assignCareLevel(int clientId, int careLevelId, List<Integer> itemIds) {
         LocalDate now = LocalDate.now();
         LocalDate threeMonthsLater = now.plusMonths(3);
-
         List<ClientCareConfig> configs = new ArrayList<>();
         for (int itemId : itemIds) {
             ClientCareConfig config = new ClientCareConfig();
@@ -98,7 +60,6 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
             config.setEndDate(threeMonthsLater);
             configs.add(config);
         }
-
         for (ClientCareConfig config : configs) {
             clientCareConfigMapper.insert(config);
         }
@@ -115,6 +76,10 @@ public class ClientCareConfigServiceImpl implements IClientCareConfigService {
     }
 
 
+    @Override
+    public void removeService(int configId) {
+        clientCareConfigMapper.removeService(configId);
+    }
 
     @Override
     public void addService(int clientId, int itemId, int quantity, LocalDate endDate) {

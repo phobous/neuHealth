@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuhealth.demo.mapper.HelpGiverMapper">
+
+<select id="getClientInfoByCaregiverIdAndName" resultType="com.neuhealth.demo.domain.ClientInfoDTO">
+    SELECT
+        c.id AS clientId,
+        c.name,
+        TIMESTAMPDIFF(YEAR, c.birth_date, CURDATE()) AS age,
+        c.gender,
+        r.room_number AS roomNumber,
+        b.bed_number AS bedNumber,
+        r.building,
+        cc.phone
+    FROM
+        clients c
+    LEFT JOIN beds b ON c.bed_id = b.id
+    LEFT JOIN rooms r ON b.room_id = r.id
+    LEFT JOIN client_contacts cc ON c.id = cc.client_id
+    INNER JOIN caregiver_client cg ON c.id = cg.client_id
+    WHERE c.is_deleted = FALSE
+      AND cg.caregiver_id = #{caregiverId}
+      AND c.name LIKE CONCAT('%', #{keyword}, '%')
+    </select>
+
+
+
+
+</mapper>

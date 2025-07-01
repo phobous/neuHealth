@@ -29,10 +29,10 @@ public class CareLevelController {
 
     // 二、修改护理级别状态
     @PostMapping("/updateStatus")
-    public Map<String, Object> updateStatus(@RequestParam int id, @RequestParam String status) {
+    public Map<String, Object> updateStatus(@RequestBody CareLevel level) {
         Map<String, Object> result = new HashMap<>();
         try {
-            careLevelService.updateStatus(id, status);
+            careLevelService.updateStatus(level.getId(), level.getStatus());
             result.put("isOk", true);
             result.put("msg", "状态更新成功");
         } catch (Exception e) {
@@ -56,6 +56,39 @@ public class CareLevelController {
         }
         return result;
     }
+    // 四、查询所有护理级别（不筛选状态）
+    @GetMapping("/listAll")
+    public Map<String, Object> listAllCareLevels() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            List<CareLevel> levels = careLevelService.listAll();
+            result.put("isOk", true);
+            result.put("msg", "查询所有护理级别成功");
+            result.put("care_levels", levels);
+        } catch (Exception e) {
+            result.put("isOk", false);
+            result.put("msg", "查询失败: " + e.getMessage());
+        }
+        return result;
+}
+    // 五、根据 id 删除护理级别
+    @DeleteMapping("/delete/{id}")
+    public Map<String, Object> deleteCareLevel(@PathVariable int id) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            boolean success = careLevelService.deleteById(id);
+            if (success) {
+                result.put("isOk", true);
+                result.put("msg", "删除成功");
+            } else {
+                result.put("isOk", false);
+                result.put("msg", "删除失败，id不存在");
+            }
+        } catch (Exception e) {
+            result.put("isOk", false);
+            result.put("msg", "删除异常: " + e.getMessage());
+        }
+        return result;
+}
 
-    // 护理项目配置功能建议分开写在 CareLevelProjectController 中，如需我也可补充
 }

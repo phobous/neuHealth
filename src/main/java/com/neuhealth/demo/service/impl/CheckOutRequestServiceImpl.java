@@ -5,8 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.CheckOutRequest;
 import com.neuhealth.demo.domain.CheckOutRequestVO;
-import com.neuhealth.demo.domain.Client;
-import com.neuhealth.demo.domain.OutRequest;
+import com.neuhealth.demo.mapper.BedUsageRecordMapper;
 import com.neuhealth.demo.mapper.CheckOutRequestMapper;
 import com.neuhealth.demo.mapper.CheckOutRequestVOMapper;
 import com.neuhealth.demo.service.ICheckOutRequestService;
@@ -24,6 +23,8 @@ public class CheckOutRequestServiceImpl extends ServiceImpl<CheckOutRequestMappe
     private CheckOutRequestMapper mapper;
     @Autowired
     private CheckOutRequestVOMapper voMapper;
+    @Autowired
+    private BedUsageRecordMapper usageRecordMapper;
 
     @Override
     public List<CheckOutRequestVO> findAll() {
@@ -61,6 +62,9 @@ public class CheckOutRequestServiceImpl extends ServiceImpl<CheckOutRequestMappe
         if (updated && "通过".equals(status) &&
             ("正常退住".equals(request.getType()) || "死亡退住".equals(request.getType()))) {
             mapper.updateBedStatus(request.getClientId(), "空闲");
+            mapper.updateCheckoutDate(requestId, new Date());
+            usageRecordMapper.endOldBedUsage(request.getClientId(), new Date());
+            usageRecordMapper.markAllInactive(request.getClientId());
         }
         return updated;
     }

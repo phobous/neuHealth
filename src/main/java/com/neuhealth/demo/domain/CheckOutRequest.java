@@ -18,9 +18,12 @@ public class CheckOutRequest {
     private String reason;
     private Date requestedAt;
     private String status;
+    private Date checkInDate;
+    private Date checkOutDate;
     private int reviewerId;
     private Date reviewTime;
     private String detail;
+    private boolean isDeleted;
 
     public String getStatus() {
         return status;

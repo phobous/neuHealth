@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.neuhealth.demo.mapper.ClientRoomBedMapper">
+
+    <select id="selectClientWithRoomAndBed" resultType="com.neuhealth.demo.domain.ClientRoomBedVO">
+        SELECT
+            c.id AS clientId,
+            c.name,
+            c.gender,
+            c.nation,
+            c.birth_date AS birthDate,
+            c.id_card AS idCard,
+            c.blood_type AS bloodType,
+            c.check_in_date AS checkInDate,
+            c.contract_end_date AS contractEndDate,
+            c.type,
+            c.created_at AS createdAt,
+            cc.contact_name AS contactName,
+            cc.phone,
+            b.id AS bedId,
+            b.bed_number AS bedNumber,
+            r.id AS roomId,
+            r.room_number AS roomNumber,
+            r.floor,
+            r.building
+        FROM clients c
+                 LEFT JOIN beds b ON c.bed_id = b.id AND b.is_deleted = FALSE
+                 LEFT JOIN rooms r ON b.room_id = r.id AND r.is_deleted = FALSE
+                 LEFT JOIN client_contacts cc ON cc.client_id = c.id
+        WHERE c.is_deleted = 0
+        ORDER BY c.id
+    </select>
+
+    <select id="selectClientsWithRoomAndBed" resultType="com.neuhealth.demo.domain.ClientRoomBedVO">
+        SELECT
+        c.id AS clientId,
+        c.name,
+        c.gender,
+        c.nation,
+        c.id_card AS idCard,
+        c.birth_date AS birthDate,
+        c.blood_type AS bloodType,
+        c.check_in_date AS checkInDate,
+        c.contract_end_date AS contractEndDate,
+        c.type,
+        c.created_at AS createdAt,
+        cc.contact_name AS contactName,
+        cc.phone,
+        b.id AS bedId,
+        b.bed_number AS bedNumber,
+        r.id AS roomId,
+        r.room_number AS roomNumber,
+        r.floor,
+        r.building
+        FROM clients c
+        LEFT JOIN beds b ON c.bed_id = b.id AND b.is_deleted = 0
+        LEFT JOIN rooms r ON b.room_id = r.id AND r.is_deleted = 0
+        LEFT JOIN client_contacts cc ON cc.client_id = c.id
+        WHERE c.is_deleted = 0
+        <if test="name != null and name != ''">
+            AND c.name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <if test="type != null and type != ''">
+            AND c.type = #{type}
+        </if>
+        ORDER BY c.id
+    </select>
+
+
+</mapper>
