@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.neuhealth.demo.domain.*;
-import com.neuhealth.demo.mapper.BedMapper;
-import com.neuhealth.demo.mapper.ClientBedMappingMapper;
-import com.neuhealth.demo.mapper.ClientContactMapper;
-import com.neuhealth.demo.mapper.ClientMapper;
+import com.neuhealth.demo.mapper.*;
 import com.neuhealth.demo.service.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     private ClientBedMappingMapper clientBed;
     @Autowired
     private ClientContactMapper clientContact;
+    @Autowired
+    private BedUsageRecordMapper bedUsageRecordMapper;
+
     @Override
     public List<Client> findAll() {
         return clientMapper.selectList(null);
@@ -97,6 +97,16 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
             mapping.setDeleted(false);
             mapping.setCreatedAt(new Date());
             mapping.setUpdatedAt(new Date());
+            BedUsageRecord usageRecord = new BedUsageRecord();
+            usageRecord.setClientId(client.getId());
+            usageRecord.setBedId(client.getBedId());
+            usageRecord.setCheckInDate(client.getCheckInDate());
+            usageRecord.setCheckOutDate(null);
+            usageRecord.setStatus("正在使用");
+            usageRecord.setCreatedAt(new Date());
+            usageRecord.setUpdatedAt(new Date());
+
+            bedUsageRecordMapper.insert(usageRecord);
 
             clientBed.insert(mapping);
 
@@ -158,7 +168,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         LocalDate localDate = LocalDate.parse(birthStr, formatter);
         localDate = localDate.plusDays(1);
 
-        // 2. 转换为 java.util.Date
+
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 

@@ -2,19 +2,33 @@ package com.neuhealth.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.neuhealth.demo.domain.User;
+import com.neuhealth.demo.domain.UserDTO;
 import com.neuhealth.demo.domain.UserInfoDTO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
-    @Select("SELECT * FROM users WHERE username = #{username} AND password = #{password} AND is_deleted = false AND status = true")
-    User login(@Param("username") String username, @Param("password") String password);
+    @Select("""
+            SELECT 
+                u.*, 
+                c.id AS caregiver_id
+            FROM users u
+            LEFT JOIN caregivers c ON u.id = c.user_id
+            WHERE u.username = #{username} AND u.password = #{password}
+        """)
+        @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "username", column = "username"),
+            @Result(property = "password", column = "password"),
+            @Result(property = "realName", column = "real_name"),
+            @Result(property = "roleId", column = "role_id"),
+            @Result(property = "caregiverId", column = "caregiver_id")
+        })
+    UserDTO login(@Param("username") String username, @Param("password") String password);
+
     // 模糊查询用户列表（用户名或真实姓名）+ 联查角色名称
     @Select("""
         SELECT 

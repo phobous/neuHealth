@@ -44,7 +44,7 @@ public class ClientRoomBedController {
 
     @GetMapping("/by-room")
     public List<Bed> getBedsByRoom(@RequestParam("roomId") int roomId) {
-        return bed.getBedsByRoom(roomId);
+        return bed.getAvailableBeds(roomId);
     }
 
 }

@@ -22,12 +22,6 @@
           AND status = '空闲'
           AND is_deleted = 0
     </select>
-    <select id="getAvailableBeds" resultType="com.neuhealth.demo.domain.Bed">
-        SELECT * FROM beds
-        WHERE room_id = #{roomId}
-          AND status = '空闲'
-          AND is_deleted = 0
-    </select>
 
     <select id="getAllBeds" resultType="com.neuhealth.demo.domain.Bed">
         SELECT b.*, r.floor AS floor

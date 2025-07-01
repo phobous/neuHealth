@@ -1,5 +1,8 @@
 package com.neuhealth.demo.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -8,13 +11,25 @@ import java.util.Date;
 @Data
 @TableName("check_out_requests")
 public class CheckOutRequest {
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
-    private Integer clientId;
+    private int clientId;
     private String type;
     private String reason;
     private Date requestedAt;
     private String status;
-    private Integer reviewerId;
+    private Date checkInDate;
+    private Date checkOutDate;
+    private int reviewerId;
     private Date reviewTime;
     private String detail;
+    private boolean isDeleted;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }

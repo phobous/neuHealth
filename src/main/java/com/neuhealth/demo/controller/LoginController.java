@@ -1,6 +1,7 @@
 package com.neuhealth.demo.controller;
 
 import com.neuhealth.demo.domain.User;
+import com.neuhealth.demo.domain.UserDTO;
 import com.neuhealth.demo.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,8 @@ public class LoginController {
             return result;
         }
 
-        User user = userService.login(username, password);
-
+        UserDTO user = userService.login(username, password);
+        System.out.println("用户登录：" + username + " " + password);
         if (user != null) {
             result.put("isOk", true);
             result.put("msg", "登录成功");

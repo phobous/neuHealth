@@ -135,4 +135,14 @@
         bur.id = #{id}
         AND bur.is_deleted = FALSE
     </select>
+
+    <update id="markAllInactive">
+        UPDATE bed_usage_records
+        SET status = '使用历史',
+            check_out_date = NOW()
+        WHERE client_id = #{clientId}
+          AND status = '正在使用'
+          AND is_deleted = FALSE
+    </update>
+
 </mapper>

@@ -15,4 +15,5 @@ public class CareRecord {
     private Date careTime;
     private Integer careQuantity;
     private boolean isDeleted;
+    private String careContent ;
 }

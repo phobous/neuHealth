@@ -18,4 +18,5 @@ public class OutRequest {
     private Integer reviewerId;
     private Date reviewTime;
     private String detail;
+    private boolean isDeleted;
 }

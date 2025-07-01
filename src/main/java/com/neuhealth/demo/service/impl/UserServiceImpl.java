@@ -1,6 +1,7 @@
 package com.neuhealth.demo.service.impl;
 
 import com.neuhealth.demo.domain.User;
+import com.neuhealth.demo.domain.UserDTO;
 import com.neuhealth.demo.domain.UserInfoDTO;
 import com.neuhealth.demo.mapper.UserMapper;
 import com.neuhealth.demo.service.IUserService;
@@ -18,7 +19,7 @@ public class UserServiceImpl implements IUserService {
         this.userMapper = userMapper;
     }
     @Override
-    public User login(String username, String password) {
+    public UserDTO login(String username, String password) {
         return userMapper.login(username, password);
     }
     @Override
